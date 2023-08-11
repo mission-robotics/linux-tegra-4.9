@@ -62,11 +62,12 @@ static unsigned int skip_txen_test; /* force skip of txen test at init time */
  * On -rt we can have a more delays, and legitimately
  * so - so don't drop work spuriously and spam the
  * syslog:
- *
- * Even in non-rt environment (under hypervisor) this constant might be
- * too small
  */
-#define PASS_LIMIT	1000000
+#ifdef CONFIG_PREEMPT_RT_FULL
+# define PASS_LIMIT	1000000
+#else
+# define PASS_LIMIT	512
+#endif
 
 #include <asm/serial.h>
 /*
