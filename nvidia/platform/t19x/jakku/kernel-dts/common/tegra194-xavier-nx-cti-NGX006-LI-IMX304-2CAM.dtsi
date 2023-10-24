@@ -1,0 +1,413 @@
+
+#define CAM_I2C_MUX TEGRA194_AON_GPIO(CC, 3)
+#define CAMERA_I2C_MUX_BUS(x) (0x1E + x)
+
+/ {
+    i2c@31e0000 {
+        gpio@74{    //Camera GPIO
+            status = "okay";
+            vcc-supply = <&battery_reg>;
+
+            camera-rst{
+                gpio-hog;
+                output-low;
+                gpios = <0 0 2 0 >;
+                label = "des_a_rst", "des_b_rst";
+            };
+        };
+    };
+
+	host1x {
+        vi@15c10000 {
+            num-channels = <2>;
+            ports {
+                #address-cells = <1>;
+                #size-cells = <0>;
+                port@0 {
+                    reg = <0>;
+                    vi_in0: endpoint {
+                        vc-id = <0>;
+                        port-index = <0>;
+                        bus-width = <2>;
+                        remote-endpoint = <&csi_out0>;
+                    };
+                };
+                port@1 {
+                    reg = <1>;
+                    vi_in1: endpoint {
+                        vc-id = <0>;
+                        port-index = <2>;
+                        bus-width = <2>;
+                        remote-endpoint = <&csi_out1>;
+                    };
+                };
+            };
+        };
+        nvcsi@15a00000 {
+            num-channels = <2>;
+            #address-cells = <1>;
+            #size-cells = <0>;
+            channel@0 {
+                reg = <0>;
+                ports {
+                    #address-cells = <1>;
+                    #size-cells = <0>;
+                    port@0 {
+                        reg = <0>;
+                        csi_in0: endpoint@0 {
+                            port-index = <0>;
+                            bus-width = <2>;
+                            remote-endpoint = <&cam_out0>;
+                        };
+                    };
+                    port@1 {
+                        reg = <1>;
+                        csi_out0: endpoint@1 {
+                            remote-endpoint = <&vi_in0>;
+                        };
+                    };
+                };
+            };
+
+            channel@1 {
+                reg = <1>;
+                ports {
+                    #address-cells = <1>;
+                    #size-cells = <0>;
+                    port@0 {
+                        reg = <0>;
+                        csi_in1: endpoint@0 {
+                            port-index = <2>;
+                            bus-width = <2>;
+                            remote-endpoint = <&cam_out1>;
+                        };
+                    };
+                    port@1 {
+                        reg = <1>;
+                        csi_out1: endpoint@1 {
+                            remote-endpoint = <&vi_in1>;
+                        };
+                    };
+                };
+            };
+        };
+	};
+
+
+	i2c@3180000 {
+    	tca9546@70 {
+            compatible = "nxp,pca9544";
+            reg = <0x70>;
+            #address-cells = <1>;
+            #size-cells = <0>;
+            skip_mux_detect = "yes";
+            vif-supply = <&battery_reg>;
+            vcc-supply = <&battery_reg>;
+
+            vcc_lp = "vcc";
+            force_bus_start = <CAMERA_I2C_MUX_BUS(0)>;
+            i2c@0{
+                reg = <0>;
+                i2c-mux,deselect-on-exit;
+                #address-cells = <1>;
+                #size-cells = <0>;
+
+                max929x@48 {
+                    compatible = "nvidia,max929x_imx304";
+                    reg = <0x48>;
+                    sensor-number = <1>;
+                    //reset-gpios = <&gpio_i2c_8_74 0 GPIO_ACTIVE_HIGH>;
+                };
+
+                imx304@28 {
+                    /* Define any required hw resources needed by driver */
+                    /* ie. clocks, io pins, power sources */
+                    clocks = <&bpmp_clks TEGRA194_CLK_EXTPERIPH1>,
+                             <&bpmp_clks TEGRA194_CLK_PLLP_OUT0>;
+                    clock-names = "extperiph1", "pllp_grtba";
+                    mclk = "extperiph1";
+	
+                    compatible = "nvidia,imx304";
+
+                    reg = <0x28>;
+                    /* Physical dimensions of sensor */
+                    physical_w = "15.0";
+                    physical_h = "12.5";
+                    devnode = "video1";
+                    sensor_model ="imx304";
+
+                    /* Defines number of frames to be dropped by driver internally after applying */
+                    /* sensor crop settings. Some sensors send corrupt frames after applying */
+                    /* crop co-ordinates */
+                    post_crop_frame_drop = "0";
+
+                    /* Convert Gain to unit of dB (decibel) befor passing to kernel driver */
+                    //use_decibel_gain = "true";
+                    
+                    delayed_gain = "true";
+
+                    /* enable CID_SENSOR_MODE_ID for sensor modes selection */
+                    use_sensor_mode_id = "true";
+
+                    mode0 {/*mode IMX304_MODE_4096X3018_CROP_30FPS*/
+                        mclk_khz = "37125";
+                        num_lanes = "2";
+                        tegra_sinterface = "serial_c";
+                        vc_id = "0";
+                        discontinuous_clk = "no";
+                        dpcm_enable = "false";
+                        cil_settletime = "0";
+                        dynamic_pixel_bit_depth = "12";
+                        csi_pixel_bit_depth = "12";
+                        mode_type = "bayer";
+                        pixel_phase = "bggr";
+
+                        active_w = "4096";
+                        active_h = "3018";
+                        readout_orientation = "0";
+                        line_length = "4304";
+                        inherent_gain = "1";
+                        mclk_multiplier = "6";
+                        pix_clk_hz = "198000000";
+                        serdes_pix_clk_hz = "1500000000";
+                        phy_mode = "DPHY";
+
+                        gain_factor = "1";
+                        min_gain_val = "0"; /* dB */
+                        max_gain_val = "480"; /* dB */
+                        step_gain_val = "1"; /* 0.3 */
+                        default_gain = "0";
+
+                        min_hdr_ratio = "1";
+                        max_hdr_ratio = "1";
+
+                        framerate_factor = "1000000";
+                        min_framerate = "1500000";
+                        max_framerate = "30000000";
+                        step_framerate = "1";
+                        default_framerate = "30000000";
+                        exposure_factor = "1000000";
+                        min_exp_time = "30"; /*us, 2 lines*/
+                        max_exp_time = "660000";
+                        step_exp_time = "1";
+                        default_exp_time = "30";/* us */
+                        embedded_metadata_height = "0";
+                    };
+                    ports {
+                        #address-cells = <1>;
+                        #size-cells = <0>;
+                        port@0 {
+                            reg = <0>;
+                            cam_out1: endpoint {
+                                vc-id = <0>;
+                                port-index = <2>;
+                                bus-width = <2>;
+                                remote-endpoint = <&csi_in1>;
+                            };
+                        };
+                    };
+                };
+
+            };
+
+
+            i2c@1 {
+                reg = <1>;
+                i2c-mux,deselect-on-exit;
+                #address-cells = <1>;
+                #size-cells = <0>;
+
+                max929x@48 {
+                    compatible = "nvidia,max929x_imx304";
+                    reg = <0x48>;
+                    sensor-number = <1>;
+                    //reset-gpios = <&gpio_i2c_8_74 0 GPIO_ACTIVE_HIGH>;
+                };
+
+                imx304@28 {
+                    /* Define any required hw resources needed by driver */
+                    /* ie. clocks, io pins, power sources */
+                    clocks = <&bpmp_clks TEGRA194_CLK_EXTPERIPH1>,
+                             <&bpmp_clks TEGRA194_CLK_PLLP_OUT0>;
+                    clock-names = "extperiph1", "pllp_grtba";
+                    mclk = "extperiph1";
+	
+                    compatible = "nvidia,imx304";
+
+                    reg = <0x28>;
+                    /* Physical dimensions of sensor */
+                    physical_w = "15.0";
+                    physical_h = "12.5";
+                    devnode = "video0";
+                    sensor_model ="imx304";
+
+                    /* Defines number of frames to be dropped by driver internally after applying */
+                    /* sensor crop settings. Some sensors send corrupt frames after applying */
+                    /* crop co-ordinates */
+                    post_crop_frame_drop = "0";
+
+                    /* Convert Gain to unit of dB (decibel) befor passing to kernel driver */
+                    //use_decibel_gain = "true";
+                    
+                    delayed_gain = "true";
+
+                    /* enable CID_SENSOR_MODE_ID for sensor modes selection */
+                    use_sensor_mode_id = "true";
+
+                    mode0 {/*mode IMX304_MODE_4096X3018_CROP_30FPS*/
+                        mclk_khz = "37125";
+                        num_lanes = "2";
+                        tegra_sinterface = "serial_a";
+                        vc_id = "0";
+                        discontinuous_clk = "no";
+                        dpcm_enable = "false";
+                        cil_settletime = "0";
+                        dynamic_pixel_bit_depth = "12";
+                        csi_pixel_bit_depth = "12";
+                        mode_type = "bayer";
+                        pixel_phase = "bggr";
+
+                        active_w = "4096";
+                        active_h = "3018";
+                        readout_orientation = "0";
+                        line_length = "4304";
+                        inherent_gain = "1";
+                        mclk_multiplier = "6";
+                        pix_clk_hz = "198000000";
+                        serdes_pix_clk_hz = "1500000000";
+                        phy_mode = "DPHY";
+
+                        gain_factor = "1";
+                        min_gain_val = "0"; /* dB */
+                        max_gain_val = "480"; /* dB */
+                        step_gain_val = "1"; /* 0.3 */
+                        default_gain = "0";
+
+                        min_hdr_ratio = "1";
+                        max_hdr_ratio = "1";
+
+                        framerate_factor = "1000000";
+                        min_framerate = "1500000";
+                        max_framerate = "30000000";
+                        step_framerate = "1";
+                        default_framerate = "30000000";
+                        exposure_factor = "1000000";
+                        min_exp_time = "30"; /*us, 2 lines*/
+                        max_exp_time = "660000";
+                        step_exp_time = "1";
+                        default_exp_time = "30";/* us */
+                        embedded_metadata_height = "0";
+                    };
+                    ports {
+                        #address-cells = <1>;
+                        #size-cells = <0>;
+                        port@0 {
+                            reg = <0>;
+                            cam_out0: endpoint {
+                                vc-id = <0>;
+                                port-index = <0>;
+                                bus-width = <2>;
+                                remote-endpoint = <&csi_in0>;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+    };
+
+    lens_imx304@RBPCV2 {
+        min_focus_distance = "0.0";
+        hyper_focal = "0.0";
+        focal_length = "3.04";
+        f_number = "2.0";
+        aperture = "0.0";
+    };
+
+
+	tegra-camera-platform {
+		compatible = "nvidia, tegra-camera-platform";
+		/**
+		* Physical settings to calculate max ISO BW
+		*
+		* num_csi_lanes = <>;
+		* Total number of CSI lanes when all cameras are active
+		*
+		* max_lane_speed = <>;
+		* Max lane speed in Kbit/s
+		*
+		* min_bits_per_pixel = <>;
+		* Min bits per pixel
+		*
+		* vi_peak_byte_per_pixel = <>;
+		* Max byte per pixel for the VI ISO case
+		*
+		* vi_bw_margin_pct = <>;
+		* Vi bandwidth margin in percentage
+		*
+		* max_pixel_rate = <>;
+		* Max pixel rate in Kpixel/s for the ISP ISO case
+		*
+		* isp_peak_byte_per_pixel = <>;
+		* Max byte per pixel for the ISP ISO case
+		*
+		* isp_bw_margin_pct = <>;
+		* Isp bandwidth margin in percentage
+		*/
+		num_csi_lanes = <4>;
+	//	max_lane_speed = <4000000>;
+        max_lane_speed = <1500000>;
+		min_bits_per_pixel = <10>;
+		vi_peak_byte_per_pixel = <2>;
+		vi_bw_margin_pct = <25>;
+		isp_peak_byte_per_pixel = <5>;
+		isp_bw_margin_pct = <25>;
+        max_pixel_rate = <240000>;
+		/**
+		 * The general guideline for naming badge_info contains 3 parts, and is as follows,
+		 * The first part is the camera_board_id for the module; if the module is in a FFD
+		 * platform, then use the platform name for this part.
+		 * The second part contains the position of the module, ex. "rear" or "front".
+		 * The third part contains the last 6 characters of a part number which is found
+		 * in the module's specsheet from the vender.
+		 */
+		modules {
+			module0 {
+				badge = "imx304_front_liimx304";
+				position = "front";
+				orientation = "1";
+				drivernode0 {
+					/* Declare PCL support driver (classically known as guid)  */
+					pcl_id = "v4l2_sensor";
+					/* Driver v4l2 device name */
+					devname = "imx304 31-0028";
+					/* Declare the device-tree hierarchy to driver instance */
+					proc-device-tree = "/proc/device-tree/i2c@3180000/tca9546@70/i2c@1/imx304@28";
+				};
+                drivernode1 {
+                    pcl_id = "v4l2_lens";
+                    proc-device-tree = "/proc/device-tree/lens_imx304@RBPCV2/";
+                };
+			};
+
+			module1 {
+				badge = "imx304_back_liimx304";
+				position = "back";
+				orientation = "1";
+				drivernode0 {
+					/* Declare PCL support driver (classically known as guid)  */
+					pcl_id = "v4l2_sensor";
+					/* Driver v4l2 device name */
+					devname = "imx304 30-0028";
+					/* Declare the device-tree hierarchy to driver instance */
+					proc-device-tree = "/proc/device-tree/i2c@3180000/tca9546@70/i2c@0/imx304@28";
+				};
+                drivernode1 {
+                    pcl_id = "v4l2_lens";
+                    proc-device-tree = "/proc/device-tree/lens_imx304@RBPCV2/";
+                };
+			};
+		};
+	};
+};
+

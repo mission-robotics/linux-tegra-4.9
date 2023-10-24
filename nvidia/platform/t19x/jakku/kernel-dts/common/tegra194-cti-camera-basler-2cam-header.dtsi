@@ -1,0 +1,39 @@
+#define  I2C_ADDR   i2c@3180000
+#define  VI_ADDR   vi@15c10000
+#define  NVCSI_ADDR   nvcsi@15a00000
+#define  I2C_EXPANDER_ADDR   tca9544@70
+#define  NUM_MIPI_CHAN   2
+#define  BUS_WIDTH   2
+#define  COMPATIBLE_STRING   "basler,basler-camera"
+
+#define VI_CSI_PORT_INDEX0  0
+#define VI_CSI_PORT_INDEX1  2
+
+#define  NUM_OF_LANES   "2"
+
+#define  I2C0   i2c@0
+#define  I2C1   i2c@1
+
+#define  I2C_NODE_REG   0x36
+#define  SENSOR_MODEL   "basler-mcm"
+
+#define  I2C0_NODE    basler_basler-mcm_a@36
+#define  I2C1_NODE    basler_basler-mcm_b@36
+
+#define  I2C0_NODE_SINTERFACE    "serial_a"
+#define  I2C1_NODE_SINTERFACE    "serial_c"
+
+#define MODULE0_BADGE    "basler-mcm_front_basler-mcm"
+#define MODULE1_BADGE    "basler-mcm_rear_basler-mcm"
+
+#define MODULE0_DEVNAME  "basler-mcm 9-0036"
+#define MODULE1_DEVNAME  "basler-mcm 10-0036"
+
+#define PROC_DEVICE_TREE_MODULE0  "/proc/device-tree/i2c@3180000/tca9544@70/i2c@0/basler_basler-mcm_a@36"
+#define PROC_DEVICE_TREE_MODULE1  "/proc/device-tree/i2c@3180000/tca9544@70/i2c@1/basler_basler-mcm_b@36"
+
+
+/{
+nvidia,dtsfilename = "tegra194-cti-camera-basler-2cam-header.dtsi";
+nvidia,dtbbuildtime = __DATE__, __TIME__;
+};

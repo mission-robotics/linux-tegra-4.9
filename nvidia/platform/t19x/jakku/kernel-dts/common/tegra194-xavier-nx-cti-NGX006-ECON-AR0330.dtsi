@@ -1,0 +1,1181 @@
+/* Econ device tree for AR1335 support */
+#include "dt-bindings/clock/tegra194-clock.h"
+#define CAM0_PWDN	TEGRA194_MAIN_GPIO(P, 4)
+/ {
+
+	/* set camera gpio direction to output */
+	gpio@2200000 {
+		camera-control-output-low {
+		 	gpio-hog;
+		 	output-low;
+		 	gpios = <CAM0_PWDN 0>;
+			label = "cam0-pwdn";
+		};
+	};
+
+	/* all cameras are disabled by default */
+	host1x {
+		vi@15c10000 {
+			num-channels = <4>;
+			status = "okay";
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				port@0 {
+					reg = <0>;
+					status = "okay";
+					ecam_vi_in0: endpoint {
+						 vc-id = <0>; 									 
+						 //port-index = <5>;
+						 port-index = <2>;
+						 bus-width = <4>;
+						 status = "okay";	
+						 remote-endpoint = <&ecam_csi_out0>;
+					 };
+				};
+				port@1 {
+					reg = <1>;
+					status = "okay";	
+					ecam_vi_in1: endpoint {
+						 vc-id = <1>; 									 
+						 //port-index = <5>;
+						 port-index = <2>;
+						 bus-width = <4>;
+						 status = "okay";	
+						 remote-endpoint = <&ecam_csi_out1>;
+					 };
+				};
+
+				port@2 {
+					reg = <2>;
+					status = "okay";
+					ecam_vi_in2: endpoint {
+						 vc-id = <0>; 									 
+						 //port-index = <4>;
+						 port-index = <0>;
+						 bus-width = <4>;
+						 status = "okay";	
+						 remote-endpoint = <&ecam_csi_out2>;
+					 };
+				};
+				port@3 {
+					reg = <3>;
+					status = "okay";	
+					ecam_vi_in3: endpoint {
+						 vc-id = <1>; 									 
+						 //port-index = <4>;
+						 port-index = <0>;
+						 bus-width = <4>;
+						 status = "okay";	
+						 remote-endpoint = <&ecam_csi_out3>;
+					 };
+				};
+			};
+		};
+
+		nvcsi@15a00000 {
+			num-channels = <4>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "okay";	
+			channel@0 {
+				reg = <0>;
+				status = "okay";	
+				ports {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					port@0 {
+						reg = <0>;
+						status = "okay";	
+						ecam_csi_in0: endpoint@0 {
+							  //port-index = <6>;
+							  port-index = <2>;
+							  bus-width = <4>;
+							  status = "okay";	
+							  remote-endpoint = <&ecam_ar0330_out0>;
+						  };
+					};
+					port@1 {
+						reg = <1>;
+						status = "okay";	
+						ecam_csi_out0: endpoint@1 {
+						   remote-endpoint = <&ecam_vi_in0>;
+						   status = "okay";	
+					   };
+					};
+				};
+			};
+			channel@1 {
+				reg = <1>;
+				status = "okay";	
+				ports {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					port@0 {
+						reg = <0>;
+						status = "okay";	
+						ecam_csi_in1: endpoint@2 {
+							  //port-index = <6>;
+							  port-index = <2>;
+							  bus-width = <4>;
+							  status = "okay";	
+							  remote-endpoint = <&ecam_ar0330_out1>;
+						};
+					};
+					port@1 {
+						reg = <1>;
+						status = "okay";	
+						ecam_csi_out1: endpoint@3 {
+							   remote-endpoint = <&ecam_vi_in1>;
+							   status = "okay";	
+					   };
+					};
+				};
+			};
+
+			channel@2 {
+				reg = <2>;
+				status = "okay";	
+				ports {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					port@0 {
+						reg = <0>;
+						status = "okay";	
+						ecam_csi_in2: endpoint@4 {
+							  //port-index = <4>;
+							  port-index = <0>;
+							  bus-width = <4>;
+							  status = "okay";	
+							  remote-endpoint = <&ecam_ar0330_out2>;
+						  };
+					};
+					port@1 {
+						reg = <1>;
+						status = "okay";	
+						ecam_csi_out2: endpoint@5 {
+						   remote-endpoint = <&ecam_vi_in2>;
+						   status = "okay";	
+					   };
+					};
+				};
+			};
+			channel@3 {
+				reg = <3>;
+				status = "okay";	
+				ports {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					port@0 {
+						reg = <0>;
+						status = "okay";	
+						ecam_csi_in3: endpoint@6 {
+							  //port-index = <4>;
+							  port-index = <0>;
+							  bus-width = <4>;
+							  status = "okay";	
+							  remote-endpoint = <&ecam_ar0330_out3>;
+						};
+					};
+					port@1 {
+						reg = <1>;
+						status = "okay";	
+						ecam_csi_out3: endpoint@7 {
+							   remote-endpoint = <&ecam_vi_in3>;
+							   status = "okay";	
+					   };
+					};
+				};
+			};
+		};
+	};
+	
+	
+	
+	i2c@31e0000 {
+	   /*
+		*gpio@74{    //Camera GPIO
+        *   status = "okay";
+        *    vcc-supply = <&battery_reg>;
+        *
+        *    camera-rst{
+        *        gpio-hog;
+        *        output-low;
+        *        gpios = <0 0 2 0 >;
+        *        label = "des_a_rst", "des_b_rst";
+        *    };
+        *};
+		*/
+		gpio@74{    //Camera GPIO
+			clock-frequency = <100000>;
+			tca9539_74: tca9539@74 {
+			compatible = "ti,tca9539";
+			gpio-controller;
+			#gpio-cells = <2>;
+			reg = <0x74>;
+			vcc-supply = <&battery_reg>;
+		 	status = "okay";
+			tca9539_74_outlow {
+		 		/*
+				 * GPIO-0  : RST_CAMA
+		 		 * GPIO-1  : BOOT_CAMA
+		 		 * GPIO-2  : RST_CAMB
+		 		 * GPIO-3  : BOOT_CAMB
+		 		 * GPIO-4  : RST_CAMC
+		 		 * GPIO-5  : BOOT_CAMC
+		 		 * GPIO-6  : RST_CAMD
+		 		 * GPIO-7  : BOOT_CAMD
+				 */
+		 		gpio-hog;
+		 		gpios = <0 0 1 0 2 0 3 0 4 0 5 0 6 0 7 0>;
+		 		output-low;
+		 		label = "tca9539_74_outlow_0",
+		 				"tca9539_74_outlow_1",
+		 				"tca9539_74_outlow_2",
+		 				"tca9539_74_outlow_3",
+		 				"tca9539_74_outlow_4",
+		 				"tca9539_74_outlow_5",
+		 				"tca9539_74_outlow_6",
+		 				"tca9539_74_outlow_7";
+		 	};
+		 	tca9539_74_outhigh {
+		 		status= "disabled";
+		 	};
+	     	tca9539_74_input {
+		 		status = "disabled";
+		 	};
+		 };
+	    };
+	};
+
+	i2c@3180000 {
+		status = "okay";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		tca9544@70 {
+            compatible = "nxp,pca9544";
+            reg = <0x70>;
+            #address-cells = <1>;
+            #size-cells = <0>;
+			vcc-supply = <&battery_reg>;
+			//vcc-supply = <&p3509_vdd_1v8_cvb>;
+			skip_mux_detect;
+            force_bus_start = <0x1e>;
+			i2c@0 {
+	            reg = <0>;
+    	   	    i2c-mux,deselect-on-exit;
+        	    #address-cells = <1>;
+             	#size-cells = <0>;
+	            status = "okay";
+				ar0330_a@43 {
+					status = "okay";
+					compatible = "nvidia,ar0330";
+					reg = <0x43>;
+					sensor_model ="ar0330";
+					avdd-reg = "vana";
+					iovdd-reg = "vif";
+					clocks = <&bpmp_clks  TEGRA194_CLK_EXTPERIPH1>,
+							 <&bpmp_clks TEGRA194_CLK_PLLP_OUT0>;
+					clock-names = "extperiph1", "pllp_grtba";
+					mclk = "extperiph1";
+					clock-frequency = <24000000>;
+					/* This GPIO needs to be toggled only once for the entire setup */
+					poc-gpio = <&tegra_main_gpio CAM0_PWDN GPIO_ACTIVE_HIGH>;
+					vana-supply = <&battery_reg>;
+					vif-supply = <&battery_reg>;
+					use_sensor_mode_id = "false";
+					camera_mipi_lanes = <2>;	
+
+					/* Parameter to denote PHY layer */
+					phy-id = "A";
+					deserializer-address = <0x48>;
+					serializer-address_1 = <0x40>;
+					serializer-address_2 = <0x41>;
+					serializer-address_3 = <0x50>;
+					mode0 {		// MODE_640X480
+						mclk_khz = "24000";
+						num_lanes = "2";
+						tegra_sinterface = "serial_a";
+						phy_mode = "DPHY";
+						discontinuous_clk = "no";
+						dpcm_enable = "false";
+						cil_settletime = "0";
+						dynamic_pixel_bit_depth = "16";
+						csi_pixel_bit_depth = "16";
+						mode_type = "yuv";
+						pixel_phase = "uyvy";
+						pixel_t = "uyvy";
+
+						active_w = "1280";
+						active_h = "720";
+						readout_orientation = "0";
+						deskew_initial_enable = "false";
+						pix_clk_hz = "1152000000";
+						/* Below mode parameter not used for econ UYVY camera sensor */ 
+						line_length = "3840";
+						inherent_gain = "1";
+						mclk_multiplier = "6.67";
+
+						min_gain_val = "0"; /* dB */
+						max_gain_val = "48"; /* dB */
+						min_hdr_ratio = "1";
+						max_hdr_ratio = "1";
+						min_framerate = "1.5";
+						max_framerate = "30";
+						min_exp_time = "30";
+						max_exp_time = "660000";
+					};
+					mode1 {		// MODE_1280X720
+						mclk_khz = "24000";
+						num_lanes = "2";
+						tegra_sinterface = "serial_a";
+						phy_mode = "DPHY";
+						discontinuous_clk = "no";
+						dpcm_enable = "false";
+						cil_settletime = "0";
+						dynamic_pixel_bit_depth = "16";
+						csi_pixel_bit_depth = "16";
+						mode_type = "yuv";
+						pixel_phase = "uyvy";
+						pixel_t = "uyvy";
+
+						active_w = "1280";
+						active_h = "720";
+						readout_orientation = "0";
+						deskew_initial_enable = "false";
+						pix_clk_hz = "1152000000";
+						/* Below mode parameter not used for econ UYVY camera sensor */ 
+						line_length = "3840";
+						inherent_gain = "1";
+						mclk_multiplier = "6.67";
+
+						min_gain_val = "0"; /* dB */
+						max_gain_val = "48"; /* dB */
+						min_hdr_ratio = "1";
+						max_hdr_ratio = "1";
+						min_framerate = "1.5";
+						max_framerate = "30";
+						min_exp_time = "30";
+						max_exp_time = "660000";
+					};
+					mode2 {		// MODE_1920X1080
+						mclk_khz = "24000";
+						num_lanes = "2";
+						tegra_sinterface = "serial_a";
+						phy_mode = "DPHY";
+						discontinuous_clk = "no";
+						dpcm_enable = "false";
+						cil_settletime = "0";
+						dynamic_pixel_bit_depth = "16";
+						csi_pixel_bit_depth = "16";
+						mode_type = "yuv";
+						pixel_phase = "uyvy";
+						pixel_t = "uyvy";
+
+						active_w = "1920";
+						active_h = "1080";
+						readout_orientation = "0";
+						deskew_initial_enable = "false";
+						pix_clk_hz = "1152000000";
+						/* Below mode parameter not used for econ UYVY camera sensor */ 
+						line_length = "3840";
+						inherent_gain = "1";
+						mclk_multiplier = "6.67";
+
+						min_gain_val = "0"; /* dB */
+						max_gain_val = "48"; /* dB */
+						min_hdr_ratio = "1";
+						max_hdr_ratio = "1";
+						min_framerate = "1.5";
+						max_framerate = "30";
+						min_exp_time = "30";
+						max_exp_time = "660000";
+					};
+					mode3 {		// MODE_2304X1296
+						mclk_khz = "24000";
+						num_lanes = "2";
+						tegra_sinterface = "serial_a";
+						phy_mode = "DPHY";
+						discontinuous_clk = "no";
+						dpcm_enable = "false";
+						cil_settletime = "0";
+						dynamic_pixel_bit_depth = "16";
+						csi_pixel_bit_depth = "16";
+						mode_type = "yuv";
+						pixel_phase = "uyvy";
+						pixel_t = "uyvy";
+
+						active_w = "2304";
+						active_h = "1296";
+						readout_orientation = "0";
+						deskew_initial_enable = "false";
+						pix_clk_hz = "1152000000";
+						/* Below mode parameter not used for econ UYVY camera sensor */ 
+						line_length = "3840";
+						inherent_gain = "1";
+						mclk_multiplier = "6.67";
+
+						min_gain_val = "0"; /* dB */
+						max_gain_val = "48"; /* dB */
+						min_hdr_ratio = "1";
+						max_hdr_ratio = "1";
+						min_framerate = "1.5";
+						max_framerate = "30";
+						min_exp_time = "30";
+						max_exp_time = "660000";
+					};
+					mode4 {		// MODE_2304X1536
+						mclk_khz = "24000";
+						num_lanes = "2";
+						tegra_sinterface = "serial_a";
+						phy_mode = "DPHY";
+						discontinuous_clk = "no";
+						dpcm_enable = "false";
+						cil_settletime = "0";
+						dynamic_pixel_bit_depth = "16";
+						csi_pixel_bit_depth = "16";
+						mode_type = "yuv";
+						pixel_phase = "uyvy";
+						pixel_t = "uyvy";
+
+						active_w = "2304";
+						active_h = "1536";
+						readout_orientation = "0";
+						deskew_initial_enable = "false";
+						pix_clk_hz = "1152000000";
+						/* Below mode parameter not used for econ UYVY camera sensor */ 
+						line_length = "3840";
+						inherent_gain = "1";
+						mclk_multiplier = "6.67";
+
+						min_gain_val = "0"; /* dB */
+						max_gain_val = "48"; /* dB */
+						min_hdr_ratio = "1";
+						max_hdr_ratio = "1";
+						min_framerate = "1.5";
+						max_framerate = "30";
+						min_exp_time = "30";
+						max_exp_time = "660000";
+					};
+					ports {
+						#address-cells = <1>;
+						#size-cells = <0>;
+						port@0 {
+							reg = <0>;
+							ecam_ar0330_out0: endpoint {
+								vc-id = <0>;		 
+								port-index = <6>;
+								bus-width = <4>;
+								remote-endpoint = <&ecam_csi_in0>;
+							};
+						};
+					};
+				};
+
+               ar0330_b@44 {
+                        status = "okay";
+                        compatible = "nvidia,ar0330";
+                        reg = <0x44>;
+						reg_mux = <0>;
+                        sensor_model ="ar0330";
+                        avdd-reg = "vana";
+                        iovdd-reg = "vif";
+						clocks = <&bpmp_clks  TEGRA194_CLK_EXTPERIPH1>,
+				 		<&bpmp_clks TEGRA194_CLK_PLLP_OUT0>;
+                        clock-names = "extperiph1", "pllp_grtba";
+                        mclk = "extperiph1";
+                        clock-frequency = <24000000>;
+						vana-supply= <&battery_reg>;
+						vif-supply = <&battery_reg>;
+						//vif-supply = <&p3509_vdd_1v8_cvb>;
+						use_sensor_mode_id = "false";
+						camera_mipi_lanes = <2>;	
+
+					/* Parameter to enable i2c translation */
+					phy-id = "B";
+					deserializer-address = <0x48>;
+					serializer-address_1 = <0x40>;
+					serializer-address_2 = <0x41>;
+					serializer-address_3 = <0x50>;					
+					mode0 {     //MODE_640X480
+     					mclk_khz = "24000";
+     					num_lanes = "2";
+     					tegra_sinterface = "serial_b";
+     					phy_mode = "DPHY";
+     					discontinuous_clk = "no";
+     					dpcm_enable = "false";
+     					cil_settletime = "0";
+     					dynamic_pixel_bit_depth = "16";
+     					csi_pixel_bit_depth = "16";
+     					mode_type = "yuv";
+     					pixel_phase = "uyvy";
+     					pixel_t = "uyvy";
+     
+     					active_w = "640";
+     					active_h = "480";
+     					readout_orientation = "0";
+     					pix_clk_hz = "1152000000";
+     					deskew_initial_enable = "false";
+     					/* Below mode parameter not used in for econ UYVY camera sensor */ 
+     					line_length = "3840";
+     					inherent_gain = "1";
+     					mclk_multiplier = "6.67";
+     
+     					min_gain_val = "0"; /* dB */
+     					max_gain_val = "48"; /* dB */
+     					min_hdr_ratio = "1";
+     					max_hdr_ratio = "1";
+     					min_framerate = "1.5";
+     					max_framerate = "30";
+     					min_exp_time = "30";
+     					max_exp_time = "660000";
+				    };
+				mode1 {     //MODE_1280X720
+					mclk_khz = "24000";
+					num_lanes = "2";
+					tegra_sinterface = "serial_b";
+					phy_mode = "DPHY";
+					discontinuous_clk = "no";
+					dpcm_enable = "false";
+					cil_settletime = "0";
+					dynamic_pixel_bit_depth = "16";
+					csi_pixel_bit_depth = "16";
+					mode_type = "yuv";
+					pixel_phase = "uyvy";
+					pixel_t = "uyvy";
+
+					active_w = "1280";
+					active_h = "720";
+					readout_orientation = "0";
+					pix_clk_hz = "1152000000";
+					deskew_initial_enable = "false";
+					/* Below mode parameter not used in for econ UYVY camera sensor */ 
+					line_length = "3840";
+					inherent_gain = "1";
+					mclk_multiplier = "6.67";
+
+					min_gain_val = "0"; /* dB */
+					max_gain_val = "48"; /* dB */
+					min_hdr_ratio = "1";
+					max_hdr_ratio = "1";
+					min_framerate = "1.5";
+					max_framerate = "30";
+					min_exp_time = "30";
+					max_exp_time = "660000";
+				};
+				mode2 {     //MODE_1920X1080
+					mclk_khz = "24000";
+					num_lanes = "2";
+					tegra_sinterface = "serial_b";
+					phy_mode = "DPHY";
+					discontinuous_clk = "no";
+					dpcm_enable = "false";
+					cil_settletime = "0";
+					dynamic_pixel_bit_depth = "16";
+					csi_pixel_bit_depth = "16";
+					mode_type = "yuv";
+					pixel_phase = "uyvy";
+					pixel_t = "uyvy";
+
+					active_w = "1920";
+					active_h = "1080";
+					readout_orientation = "0";
+					pix_clk_hz = "1152000000";
+					deskew_initial_enable = "false";
+					/* Below mode parameter not used in for econ UYVY camera sensor */ 
+					line_length = "3840";
+					inherent_gain = "1";
+					mclk_multiplier = "6.67";
+
+					min_gain_val = "0"; /* dB */
+					max_gain_val = "48"; /* dB */
+					min_hdr_ratio = "1";
+					max_hdr_ratio = "1";
+					min_framerate = "1.5";
+					max_framerate = "30";
+					min_exp_time = "30";
+					max_exp_time = "660000";
+				};
+				mode3 {     //MODE_2304X1296
+					mclk_khz = "24000";
+					num_lanes = "2";
+					tegra_sinterface = "serial_b";
+					phy_mode = "DPHY";
+					discontinuous_clk = "no";
+					dpcm_enable = "false";
+					cil_settletime = "0";
+					dynamic_pixel_bit_depth = "16";
+					csi_pixel_bit_depth = "16";
+					mode_type = "yuv";
+					pixel_phase = "uyvy";
+					pixel_t = "uyvy";
+
+					active_w = "2304";
+					active_h = "1296";
+					readout_orientation = "0";
+					pix_clk_hz = "1152000000";
+					deskew_initial_enable = "false";
+					/* Below mode parameter not used in for econ UYVY camera sensor */ 
+					line_length = "3840";
+					inherent_gain = "1";
+					mclk_multiplier = "6.67";
+
+					min_gain_val = "0"; /* dB */
+					max_gain_val = "48"; /* dB */
+					min_hdr_ratio = "1";
+					max_hdr_ratio = "1";
+					min_framerate = "1.5";
+					max_framerate = "30";
+					min_exp_time = "30";
+					max_exp_time = "660000";
+				};
+				mode4 {     //MODE_2304X1536
+					mclk_khz = "24000";
+					num_lanes = "2";
+					tegra_sinterface = "serial_b";
+					phy_mode = "DPHY";
+					discontinuous_clk = "no";
+					dpcm_enable = "false";
+					cil_settletime = "0";
+					dynamic_pixel_bit_depth = "16";
+					csi_pixel_bit_depth = "16";
+					mode_type = "yuv";
+					pixel_phase = "uyvy";
+					pixel_t = "uyvy";
+
+					active_w = "2304";
+					active_h = "1536";
+					pix_clk_hz = "1152000000";
+                    readout_orientation = "0";
+					deskew_initial_enable = "false";
+					/* Below mode parameter not used in for econ UYVY camera sensor */ 
+					line_length = "3840";
+					inherent_gain = "1";
+					mclk_multiplier = "6.67";
+
+					min_gain_val = "0"; /* dB */
+					max_gain_val = "48"; /* dB */
+					min_hdr_ratio = "1";
+					max_hdr_ratio = "1";
+					min_framerate = "1.5";
+					max_framerate = "30";
+					min_exp_time = "30";
+					max_exp_time = "660000";
+				};
+
+               		ports {
+   	    	               #address-cells = <1>;
+    	                   #size-cells = <0>;
+            	           port@0 {
+                               reg = <0>;
+                               ecam_ar0330_out1: endpoint {
+							   vc-id = <1>;		 
+                                       port-index = <6>;
+                                       bus-width = <4>;
+                                       remote-endpoint = <&ecam_csi_in1>;
+                               };
+                    	   };
+              		 	};
+       				};
+			};
+
+            i2c@1{
+                    status = "okay";
+                    reg = <1>;
+                    i2c-mux,deselect-on-exit;
+                    #address-cells = <1>;
+                    #size-cells = <0>;
+				ar0330_c@43 {
+					status = "okay";
+					compatible = "nvidia,ar0330";
+					reg = <0x43>;
+					sensor_model ="ar0330";
+					avdd-reg = "vana";
+					iovdd-reg = "vif";
+					clocks = <&bpmp_clks  TEGRA194_CLK_EXTPERIPH1>,
+							 <&bpmp_clks TEGRA194_CLK_PLLP_OUT0>;
+					clock-names = "extperiph1", "pllp_grtba";
+					mclk = "extperiph1";
+					clock-frequency = <24000000>;
+					/* This GPIO needs to be toggled only once for the entire setup */
+					poc-gpio = <&tegra_main_gpio CAM0_PWDN GPIO_ACTIVE_HIGH>;
+					vana-supply = <&battery_reg>;
+					vif-supply = <&battery_reg>;
+					use_sensor_mode_id = "false";
+					camera_mipi_lanes = <2>;	
+
+					/* Parameter to denote PHY layer */
+					phy-id = "A";
+					deserializer-address = <0x48>;
+					serializer-address_1 = <0x40>;
+					serializer-address_2 = <0x41>;
+					serializer-address_3 = <0x50>;					
+					mode0 {		// MODE_640X480
+						mclk_khz = "24000";
+						num_lanes = "2";
+						tegra_sinterface = "serial_a";
+						phy_mode = "DPHY";
+						discontinuous_clk = "no";
+						dpcm_enable = "false";
+						cil_settletime = "0";
+						dynamic_pixel_bit_depth = "16";
+						csi_pixel_bit_depth = "16";
+						mode_type = "yuv";
+						pixel_phase = "uyvy";
+						pixel_t = "uyvy";
+
+						active_w = "1280";
+						active_h = "720";
+						readout_orientation = "0";
+						deskew_initial_enable = "false";
+						pix_clk_hz = "1152000000";
+						/* Below mode parameter not used for econ UYVY camera sensor */ 
+						line_length = "3840";
+						inherent_gain = "1";
+						mclk_multiplier = "6.67";
+
+						min_gain_val = "0"; /* dB */
+						max_gain_val = "48"; /* dB */
+						min_hdr_ratio = "1";
+						max_hdr_ratio = "1";
+						min_framerate = "1.5";
+						max_framerate = "30";
+						min_exp_time = "30";
+						max_exp_time = "660000";
+					};
+					mode1 {		// MODE_1280X720
+						mclk_khz = "24000";
+						num_lanes = "2";
+						tegra_sinterface = "serial_a";
+						phy_mode = "DPHY";
+						discontinuous_clk = "no";
+						dpcm_enable = "false";
+						cil_settletime = "0";
+						dynamic_pixel_bit_depth = "16";
+						csi_pixel_bit_depth = "16";
+						mode_type = "yuv";
+						pixel_phase = "uyvy";
+						pixel_t = "uyvy";
+
+						active_w = "1280";
+						active_h = "720";
+						readout_orientation = "0";
+						deskew_initial_enable = "false";
+						pix_clk_hz = "1152000000";
+						/* Below mode parameter not used for econ UYVY camera sensor */ 
+						line_length = "3840";
+						inherent_gain = "1";
+						mclk_multiplier = "6.67";
+
+						min_gain_val = "0"; /* dB */
+						max_gain_val = "48"; /* dB */
+						min_hdr_ratio = "1";
+						max_hdr_ratio = "1";
+						min_framerate = "1.5";
+						max_framerate = "30";
+						min_exp_time = "30";
+						max_exp_time = "660000";
+					};
+					mode2 {		// MODE_1920X1080
+						mclk_khz = "24000";
+						num_lanes = "2";
+						tegra_sinterface = "serial_a";
+						phy_mode = "DPHY";
+						discontinuous_clk = "no";
+						dpcm_enable = "false";
+						cil_settletime = "0";
+						dynamic_pixel_bit_depth = "16";
+						csi_pixel_bit_depth = "16";
+						mode_type = "yuv";
+						pixel_phase = "uyvy";
+						pixel_t = "uyvy";
+
+						active_w = "1920";
+						active_h = "1080";
+						readout_orientation = "0";
+						deskew_initial_enable = "false";
+						pix_clk_hz = "1152000000";
+						/* Below mode parameter not used for econ UYVY camera sensor */ 
+						line_length = "3840";
+						inherent_gain = "1";
+						mclk_multiplier = "6.67";
+
+						min_gain_val = "0"; /* dB */
+						max_gain_val = "48"; /* dB */
+						min_hdr_ratio = "1";
+						max_hdr_ratio = "1";
+						min_framerate = "1.5";
+						max_framerate = "30";
+						min_exp_time = "30";
+						max_exp_time = "660000";
+					};
+					mode3 {		// MODE_2304X1296
+						mclk_khz = "24000";
+						num_lanes = "2";
+						tegra_sinterface = "serial_a";
+						phy_mode = "DPHY";
+						discontinuous_clk = "no";
+						dpcm_enable = "false";
+						cil_settletime = "0";
+						dynamic_pixel_bit_depth = "16";
+						csi_pixel_bit_depth = "16";
+						mode_type = "yuv";
+						pixel_phase = "uyvy";
+						pixel_t = "uyvy";
+
+						active_w = "2304";
+						active_h = "1296";
+						readout_orientation = "0";
+						deskew_initial_enable = "false";
+						pix_clk_hz = "1152000000";
+						/* Below mode parameter not used for econ UYVY camera sensor */ 
+						line_length = "3840";
+						inherent_gain = "1";
+						mclk_multiplier = "6.67";
+
+						min_gain_val = "0"; /* dB */
+						max_gain_val = "48"; /* dB */
+						min_hdr_ratio = "1";
+						max_hdr_ratio = "1";
+						min_framerate = "1.5";
+						max_framerate = "30";
+						min_exp_time = "30";
+						max_exp_time = "660000";
+					};
+					mode4 {		// MODE_2304X1536
+						mclk_khz = "24000";
+						num_lanes = "2";
+						tegra_sinterface = "serial_a";
+						phy_mode = "DPHY";
+						discontinuous_clk = "no";
+						dpcm_enable = "false";
+						cil_settletime = "0";
+						dynamic_pixel_bit_depth = "16";
+						csi_pixel_bit_depth = "16";
+						mode_type = "yuv";
+						pixel_phase = "uyvy";
+						pixel_t = "uyvy";
+
+						active_w = "2304";
+						active_h = "1536";
+						readout_orientation = "0";
+						deskew_initial_enable = "false";
+						pix_clk_hz = "1152000000";
+						/* Below mode parameter not used for econ UYVY camera sensor */ 
+						line_length = "3840";
+						inherent_gain = "1";
+						mclk_multiplier = "6.67";
+
+						min_gain_val = "0"; /* dB */
+						max_gain_val = "48"; /* dB */
+						min_hdr_ratio = "1";
+						max_hdr_ratio = "1";
+						min_framerate = "1.5";
+						max_framerate = "30";
+						min_exp_time = "30";
+						max_exp_time = "660000";
+					};
+					ports {
+						#address-cells = <1>;
+						#size-cells = <0>;
+						port@0 {
+							reg = <0>;
+							ecam_ar0330_out2: endpoint {
+								vc-id = <0>;		 
+								port-index = <4>;
+								bus-width = <4>;
+								remote-endpoint = <&ecam_csi_in2>;
+							};
+						};
+					};
+				};
+
+               ar0330_d@44 {
+			            status = "okay";
+                        compatible = "nvidia,ar0330";
+                        reg = <0x44>;
+						reg_mux = <1>;
+                        sensor_model ="ar0330";
+                        avdd-reg = "vana";
+                        iovdd-reg = "vif";
+						clocks = <&bpmp_clks  TEGRA194_CLK_EXTPERIPH1>,
+				 		<&bpmp_clks TEGRA194_CLK_PLLP_OUT0>;
+                        clock-names = "extperiph1", "pllp_grtba";
+                        mclk = "extperiph1";
+                        clock-frequency = <24000000>;
+						vana-supply = <&battery_reg>;
+						vif-supply = <&battery_reg>;
+						use_sensor_mode_id = "false";
+						camera_mipi_lanes = <2>;	
+
+					/* Parameter to enable i2c translation */
+					phy-id = "B";
+					deserializer-address = <0x48>;
+					serializer-address_1 = <0x40>;
+					serializer-address_2 = <0x41>;
+					serializer-address_3 = <0x50>;					
+					mode0 {     //MODE_640X480
+     					mclk_khz = "24000";
+     					num_lanes = "2";
+     					tegra_sinterface = "serial_b";
+     					phy_mode = "DPHY";
+     					discontinuous_clk = "no";
+     					dpcm_enable = "false";
+     					cil_settletime = "0";
+     					dynamic_pixel_bit_depth = "16";
+     					csi_pixel_bit_depth = "16";
+     					mode_type = "yuv";
+     					pixel_phase = "uyvy";
+     					pixel_t = "uyvy";
+     
+     					active_w = "640";
+     					active_h = "480";
+     					readout_orientation = "0";
+     					pix_clk_hz = "1152000000";
+     					deskew_initial_enable = "false";
+     					/* Below mode parameter not used in for econ UYVY camera sensor */ 
+     					line_length = "3840";
+     					inherent_gain = "1";
+     					mclk_multiplier = "6.67";
+     
+     					min_gain_val = "0"; /* dB */
+     					max_gain_val = "48"; /* dB */
+     					min_hdr_ratio = "1";
+     					max_hdr_ratio = "1";
+     					min_framerate = "1.5";
+     					max_framerate = "30";
+     					min_exp_time = "30";
+     					max_exp_time = "660000";
+				    };
+				mode1 {     //MODE_1280X720
+					mclk_khz = "24000";
+					num_lanes = "2";
+					tegra_sinterface = "serial_b";
+					phy_mode = "DPHY";
+					discontinuous_clk = "no";
+					dpcm_enable = "false";
+					cil_settletime = "0";
+					dynamic_pixel_bit_depth = "16";
+					csi_pixel_bit_depth = "16";
+					mode_type = "yuv";
+					pixel_phase = "uyvy";
+					pixel_t = "uyvy";
+
+					active_w = "1280";
+					active_h = "720";
+					readout_orientation = "0";
+					pix_clk_hz = "1152000000";
+					deskew_initial_enable = "false";
+					/* Below mode parameter not used in for econ UYVY camera sensor */ 
+					line_length = "3840";
+					inherent_gain = "1";
+					mclk_multiplier = "6.67";
+
+					min_gain_val = "0"; /* dB */
+					max_gain_val = "48"; /* dB */
+					min_hdr_ratio = "1";
+					max_hdr_ratio = "1";
+					min_framerate = "1.5";
+					max_framerate = "30";
+					min_exp_time = "30";
+					max_exp_time = "660000";
+				};
+				mode2 {     //MODE_1920X1080
+					mclk_khz = "24000";
+					num_lanes = "2";
+					tegra_sinterface = "serial_b";
+					phy_mode = "DPHY";
+					discontinuous_clk = "no";
+					dpcm_enable = "false";
+					cil_settletime = "0";
+					dynamic_pixel_bit_depth = "16";
+					csi_pixel_bit_depth = "16";
+					mode_type = "yuv";
+					pixel_phase = "uyvy";
+					pixel_t = "uyvy";
+
+					active_w = "1920";
+					active_h = "1080";
+					readout_orientation = "0";
+					pix_clk_hz = "1152000000";
+					deskew_initial_enable = "false";
+					/* Below mode parameter not used in for econ UYVY camera sensor */ 
+					line_length = "3840";
+					inherent_gain = "1";
+					mclk_multiplier = "6.67";
+
+					min_gain_val = "0"; /* dB */
+					max_gain_val = "48"; /* dB */
+					min_hdr_ratio = "1";
+					max_hdr_ratio = "1";
+					min_framerate = "1.5";
+					max_framerate = "30";
+					min_exp_time = "30";
+					max_exp_time = "660000";
+				};
+				mode3 {     //MODE_2304X1296
+					mclk_khz = "24000";
+					num_lanes = "2";
+					tegra_sinterface = "serial_b";
+					phy_mode = "DPHY";
+					discontinuous_clk = "no";
+					dpcm_enable = "false";
+					cil_settletime = "0";
+					dynamic_pixel_bit_depth = "16";
+					csi_pixel_bit_depth = "16";
+					mode_type = "yuv";
+					pixel_phase = "uyvy";
+					pixel_t = "uyvy";
+
+					active_w = "2304";
+					active_h = "1296";
+					readout_orientation = "0";
+					pix_clk_hz = "1152000000";
+					deskew_initial_enable = "false";
+					/* Below mode parameter not used in for econ UYVY camera sensor */ 
+					line_length = "3840";
+					inherent_gain = "1";
+					mclk_multiplier = "6.67";
+
+					min_gain_val = "0"; /* dB */
+					max_gain_val = "48"; /* dB */
+					min_hdr_ratio = "1";
+					max_hdr_ratio = "1";
+					min_framerate = "1.5";
+					max_framerate = "30";
+					min_exp_time = "30";
+					max_exp_time = "660000";
+				};
+				mode4 {     //MODE_2304X1536
+					mclk_khz = "24000";
+					num_lanes = "2";
+					tegra_sinterface = "serial_b";
+					phy_mode = "DPHY";
+					discontinuous_clk = "no";
+					dpcm_enable = "false";
+					cil_settletime = "0";
+					dynamic_pixel_bit_depth = "16";
+					csi_pixel_bit_depth = "16";
+					mode_type = "yuv";
+					pixel_phase = "uyvy";
+					pixel_t = "uyvy";
+
+					active_w = "2304";
+					active_h = "1536";
+					pix_clk_hz = "1152000000";
+                                                readout_orientation = "0";
+					deskew_initial_enable = "false";
+					/* Below mode parameter not used in for econ UYVY camera sensor */ 
+					line_length = "3840";
+					inherent_gain = "1";
+					mclk_multiplier = "6.67";
+
+					min_gain_val = "0"; /* dB */
+					max_gain_val = "48"; /* dB */
+					min_hdr_ratio = "1";
+					max_hdr_ratio = "1";
+					min_framerate = "1.5";
+					max_framerate = "30";
+					min_exp_time = "30";
+					max_exp_time = "660000";
+				};
+
+               		ports {
+   	    	               #address-cells = <1>;
+    	                   #size-cells = <0>;
+            	           port@0 {
+                               reg = <0>;
+                               ecam_ar0330_out3: endpoint {
+							   vc-id = <1>;		 
+                                       port-index = <4>;
+                                       bus-width = <4>;
+                                       remote-endpoint = <&ecam_csi_in3>;
+                               };
+                    	   };
+              		 	};
+       				};									
+          		};
+		};	
+	};
+
+		tegra-camera-platform {
+			compatible = "nvidia, tegra-camera-platform";
+			/**
+			* Physical settings to calculate max ISO BW
+			*
+			* num_csi_lanes = <>;
+			* Total number of CSI lanes when all cameras are active
+			*
+			* max_lane_speed = <>;
+			* Max lane speed in Kbit/s
+			*
+			* min_bits_per_pixel = <>;
+			* Min bits per pixel
+			*
+			* vi_peak_byte_per_pixel = <>;
+			* Max byte per pixel for the VI ISO case
+			*
+			* vi_bw_margin_pct = <>;
+			* Vi bandwidth margin in percentage
+			*
+			*/
+			num_csi_lanes = <8>;
+			max_lane_speed = <2500000>;
+			min_bits_per_pixel = <16>;
+			vi_peak_byte_per_pixel = <2>;
+			vi_bw_margin_pct = <67>;
+			//max_pixel_rate = <750000>;
+
+			modules {
+				module0 {
+					badge = "NileCAM30_TX2-1";
+					position = "centerleft";
+					orientation = "0";
+					drivernode0 {
+						pcl_id = "v4l2_sensor";
+						devname = "NileCAM30_TX2-1 ";
+						//devname = "ar0330 30-0043";
+						proc-device-tree = "/proc/device-tree/i2c@3180000/tca9544@70/i2c@0/ar0330_a@43";
+						status = "okay";
+					};
+				};
+				module1 {
+					badge = "NileCAM30_TX2-2";
+					position = "bottomleft";
+					orientation = "1";
+					drivernode0 {
+						pcl_id = "v4l2_sensor";
+						devname = "NileCAM30_TX2-2 ";
+						//devname = "ar0330 31-0044";
+						proc-device-tree = "/proc/device-tree/i2c@3180000/tca9544@70/i2c@0/ar0330_b@44";
+						status = "okay";
+					};
+				};
+				module2 {
+					badge = "NileCAM30_TX2-3";
+					position = "topright";
+					orientation = "2";
+					drivernode0 {
+						pcl_id = "v4l2_sensor";
+						devname = "NileCAM30_TX2-3 ";
+						//devname = "ar0330 32-0043 ";
+						proc-device-tree = "/proc/device-tree/i2c@3180000/tca9544@70/i2c@1/ar0330_c@43";
+						status = "okay";
+					};
+				};
+				module3 {
+					badge = "NileCAM30_TX2-4";
+					position = "bottomright";
+					orientation = "3";
+					drivernode0 {
+						pcl_id = "v4l2_sensor";
+						devname = "NileCAM30_TX2-4 ";
+						//devname = "ar0330 33-0044 ";
+						proc-device-tree = "/proc/device-tree/i2c@3180000/tca9544@70/i2c@1/ar0330_d@44";
+						status = "okay";
+					};
+				};
+			};
+		};
+};
+

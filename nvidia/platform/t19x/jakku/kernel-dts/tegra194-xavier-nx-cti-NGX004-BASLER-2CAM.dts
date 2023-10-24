@@ -1,0 +1,29 @@
+
+
+#include "tegra194-xavier-nx-cti-NGX004.dts" 
+#include "common/tegra194-xavier-nx-cti-NGX003-BASLER-2CAM.dtsi"
+
+/ {
+    nvidia,dtsfilename = "tegra194-xavier-nx-cti-NGX004-BASLER-2CAM.dts";
+    nvidia,dtbbuildtime = __DATE__, __TIME__;
+	
+	i2c@3180000 {
+		tca9546@70 {
+			compatible = "nxp,pca9544";
+			reg = <0x70>;
+			#address-cells = <1>;
+			#size-cells = <0>;			
+			//skip_mux_detect = "yes";
+			vif-supply = <&p3509_vdd_1v8_cvb>;
+			vcc-supply = <&p3509_vdd_1v8_cvb>;
+			vcc_lp = "vcc";
+		};
+	};
+
+};
+
+#if LINUX_VERSION >= 414
+#include <tegra194-linux-4.14.dtsi>
+#endif
+
+

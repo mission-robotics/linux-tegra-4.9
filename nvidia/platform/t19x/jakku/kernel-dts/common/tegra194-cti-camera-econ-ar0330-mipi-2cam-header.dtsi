@@ -1,0 +1,50 @@
+#define  I2C_ADDR   i2c@3180000
+
+#define  VI_ADDR   vi@15c10000
+#define  NVCSI_ADDR   nvcsi@15a00000
+#define  I2C_EXPANDER_ADDR   tca9546@70
+
+#define  NUM_MIPI_CHAN   2
+#define  BUS_WIDTH   2
+#define  COMPATIBLE_STRING   "nvidia,ecam30"
+
+#define VI_CSI_PORT_INDEX0  0
+#define VI_CSI_PORT_INDEX1  2
+
+#define  I2C0   i2c@0
+#define  I2C1   i2c@1
+
+#define  I2C_NODE_REG   0x42
+#define  SENSOR_MODEL   "ar0330"
+
+#define  NUM_OF_LANES   "2"
+
+#define  I2C0_NODE    ecam_ar0330_a@42
+#define  I2C1_NODE    ecam_ar0330_b@42
+
+#define  I2C0_NODE_SINTERFACE    "serial_a"
+#define  I2C1_NODE_SINTERFACE    "serial_c"
+
+#define TEGRA_CAM_PLAT_DATA 		num_csi_lanes = <4>; \
+								max_lane_speed = <2500000>; \
+								min_bits_per_pixel = <10>; \
+								vi_peak_byte_per_pixel = <2>; \
+								vi_bw_margin_pct = <25>; \
+								max_pixel_rate = <160000>; \
+								isp_peak_byte_per_pixel = <5>; \
+								isp_bw_margin_pct = <25>;
+
+#define  MODULE0_BADGE    "ar0330_front_ecam_ar0330"
+#define  MODULE1_BADGE    "ar0330_rear_ecam_ar0330"
+
+#define MODULE0_DEVNAME  "ecam30 9-0042"
+#define MODULE1_DEVNAME  "ecam30 10-0042"
+
+#define PROC_DEVICE_TREE_MODULE0  "/proc/device-tree/i2c@3180000/tca9546@70/i2c@0/ecam_ar0330_a@42"
+#define PROC_DEVICE_TREE_MODULE1  "/proc/device-tree/i2c@3180000/tca9546@70/i2c@1/ecam_ar0330_b@42"
+
+
+/{
+nvidia,dtsfilename = "tegra186-cti-camera-econ-ar0330-2cam-header.dtsi";
+nvidia,dtbbuildtime = __DATE__, __TIME__;
+};

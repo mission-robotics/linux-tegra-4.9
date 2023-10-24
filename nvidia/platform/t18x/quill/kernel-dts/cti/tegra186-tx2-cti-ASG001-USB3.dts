@@ -1,0 +1,134 @@
+#include "tegra186-tx2-cti-base.dts"
+#include <t18x-common-platforms/tegra186-tx2-cti-audio-ASG001.dtsi>
+
+/{
+    nvidia,dtsfilename = "tegra186-tx2-cti-ASG001-USB3.dts";
+
+    gpio@2200000 {
+    /*enable this to enabled PCIe Controller #2*/
+        pcie0_lane2_mux {
+             status = "disable";
+        };
+    /******************************************/
+    /*enable these two to enable USB3 Port 0*/
+        e3325_sdio_rst {
+           status = "okay";
+        };
+        e3325_lane0_mux {
+            status = "okay";
+        };
+    /******************************************/
+
+    };
+
+
+
+    xhci@3530000 {
+        status = "okay";
+        phys = <&{/xusb_padctl@3520000/pads/usb2/lanes/usb2-0}>,
+            <&{/xusb_padctl@3520000/pads/usb2/lanes/usb2-1}>,
+            <&{/xusb_padctl@3520000/pads/usb2/lanes/usb2-2}>,
+            <&{/xusb_padctl@3520000/pads/usb3/lanes/usb3-0}>;
+        phy-names = "usb2-0", "usb2-1", "usb2-2", "usb3-0";
+    };
+
+
+   xusb_padctl@3520000 {
+        pads {
+            usb2 {
+                lanes {
+                    usb2-0 {
+                        status = "okay";
+                    };
+                    usb2-1 {
+                        status = "okay";
+                    };
+                    usb2-2 {
+                        status = "okay";
+                    };
+                };
+            };
+            usb3 {
+                lanes {
+                    usb3-0 {
+                        status = "okay";
+                    };
+                    usb3-1 {
+                        status = "disabled";
+                    };
+                    usb3-2 {
+                        status = "disabled";
+                    };
+                };
+            };
+        };
+        ports {
+            usb2-0 {
+                status = "okay";
+            };
+            usb2-1 {
+                status = "okay";
+            };
+
+            usb2-2 {
+                status = "okay";
+            };
+
+            usb3-0 {
+                nvidia,usb2-companion = <1>;
+                status = "okay";
+            };
+            usb3-1 {
+                nvidia,usb2-companion = <0>;
+                status = "disabled";
+            };
+            usb3-2 {
+                nvidia,usb2-companion = <2>;
+                status = "disabled";
+            };
+        };
+    };
+    pinctrl@3520000 {
+        status = "okay";
+           pinmux {
+            usb2-port0 {
+                status = "okay";
+            };
+            usb2-port1 {
+                status = "okay";
+            };
+
+            usb2-port2 {
+                status = "okay";
+            };
+
+            usb3-port0 {
+                status = "okay";
+            };
+
+            usb3-port1 {
+                status = "disabled";
+            };
+
+            usb3-port2 {
+                status = "disabled";
+            };
+        };
+    };
+    pcie-controller@10003000 {
+        pci@1,0 {
+            nvidia,num-lanes = <1>;
+            status = "okay";
+        };
+        pci@2,0 {
+            nvidia,num-lanes = <0>;
+            status = "disabled";
+        };
+        pci@3,0 {
+            nvidia,num-lanes = <1>;
+            status = "okay";
+        };
+    };
+
+
+};

@@ -1,0 +1,9 @@
+#include "tegra194-xavier-nx-cti-NGX006.dts"
+#include "common/tegra194-xavier-nx-cti-NGX006-ECON-AR0230-mux.dtsi"
+#include "common/tegra194-fixed-regulator-p3509-0000-a00.dtsi"
+
+/{
+    nvidia,dtsfilename = "tegra194-xavier-nx-cti-NGX006-ECON-AR0230-4CAM.dts";
+    nvidia,dtbbuildtime = __DATE__, __TIME__;
+	
+};

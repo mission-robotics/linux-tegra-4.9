@@ -45,6 +45,66 @@ dtbo-$(CONFIG_ARCH_TEGRA_18x_SOC) += tegra186-quill-p3310-1000-c03-00-base-m2ke.
 dtbo-$(CONFIG_ARCH_TEGRA_18x_SOC) += tegra186-quill-p3310-1000-c03-00-base-csi.dtbo
 dtbo-$(CONFIG_ARCH_TEGRA_18x_SOC) += tegra186-quill-p3310-1000-c03-00-base-hdr30.dtbo
 
+
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ASG001-revG+.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ASG001-USB3.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ASG001-mPCIe.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ASG002-revF+.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ASG002-USB3.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ASG002-mPCIe.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ASG003.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ESG503.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ESG503-USB3.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ESG503-mPCIe.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ASG006.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ASG006-IMX274-3CAM.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ASG006-IMX274-6CAM.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ASG007.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ASG008.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ASG008-IMX274.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ASG016.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-ASG016-IMX274.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-VPG003.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-cti-VPG003-IMX274-2CAM.dtb
+
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ASG001-mPCIe.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ASG001-revG+.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ASG001-USB3.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ASG002-mPCIe.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ASG002-revF+.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ASG002-USB3.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ASG003.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ESG503.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ESG503-mPCIe.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ESG503-USB3.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ASG006.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ASG006-IMX274-3CAM.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ASG006-IMX274-6CAM.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ASG007.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ASG008.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ASG016.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ASG016-IMX274.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-ASG008-IMX274.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2i-cti-VPG003.dtb
+
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ASG001-revG+.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ASG001-USB3.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ASG001-mPCIe.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ASG002-revF+.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ASG002-USB3.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ASG002-mPCIe.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ASG003.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ASG006.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ASG007.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ASG008.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ASG008-IMX274.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ASG006-IMX274-3CAM.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ASG006-IMX274-6CAM.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ASG016.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ASG016-IMX274.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-ESG503.dtb
+dtb-$(CONFIG_ARCH_TEGRA_18x_SOC) += cti/tegra186-tx2-4G-cti-VPG003.dtb
+
 ifneq ($(dtb-y),)
 dtb-y := $(addprefix $(makefile-path)/,$(dtb-y))
 dts-include += $(makefile-path)

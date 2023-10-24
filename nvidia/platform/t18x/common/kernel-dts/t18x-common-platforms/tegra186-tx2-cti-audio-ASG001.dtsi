@@ -1,0 +1,122 @@
+
+/* Astro FSL SGTL5000 Audio code support */
+
+#include <dt-bindings/types.h>
+#include <dt-bindings/gpio/tegra186-gpio.h>
+
+/ {
+/*
+    i2c@c240000 {
+        sgtl5000: sgtl5000@0a {
+            status = "okay";
+            compatible = "fsl,sgtl5000";
+            reg = <0x0a>;
+			clocks=<&tegra_car TEGRA186_CLK_AUD_MCLK>;
+            VDDA-supply=<&vdd_1v8_ap>;
+            VDDIO-supply = <&vdd_1v8_ap>;
+            VDDD-supply = <&vdd_1v8_ap>;
+        }; 
+    };
+
+	tegra_sound: sound {
+		nvidia,num-codec-link = <11>;
+		status = "okay";
+        
+		nvidia,audio-routing =
+			"x Headphone",          "x HP_OUT",
+			"x MIC_IN",             "x Mic",
+			"x ADC",                "x Mic Bias",
+			"x LINE_IN",            "x Line In",
+			"x Line Out",           "x LINE_OUT";
+
+            
+		rt565x_dai_link: nvidia,dai-link-1 {
+			link-name = "fe-pi-audio-z-v2";
+			cpu-dai = <&tegra_i2s1>;
+			codec-dai = <&sgtl5000>;
+			cpu-dai-name = "I2S1";
+			codec-dai-name = "sgtl5000";
+			format = "i2s";
+//			bitclock-master;
+//			frame-master;
+//			bitclock-noninversion;
+//			frame-noninversion;
+//			bit-format = "s16_le";
+			srate = <48000>;
+			num-channel = <2>;
+			ignore_suspend;
+			name-prefix = "x";
+			status = "okay";
+		};
+		dspk_1_dai_link: nvidia,dai-link-12 {
+			status = "disabled";
+		};
+		dspk_2_dai_link: nvidia,dai-link-13 {
+			status = "disabled";
+        };
+	};
+*/
+
+        
+    i2c@c240000 {
+        sgtl5000: sgtl5000@0a {
+            status = "okay";
+			compatible = "fsl,sgtl5000";
+            reg = <0x0a>;
+            clocks=<&tegra_car TEGRA186_CLK_AUD_MCLK>;
+            VDDA-supply=<&vdd_1v8_ap>;
+            VDDIO-supply = <&vdd_1v8_ap>;
+            VDDD-supply = <&vdd_1v8_ap>;
+        }; 
+    };
+     
+	tegra_sound: sound {
+		nvidia,num-codec-link = <11>;
+		status = "okay";
+        
+		nvidia,audio-routing =
+            "x Headphone Jack", "x HP_OUT",
+//            "x Line In Jack", "x LINE_IN", 
+            "x Mic Jack", "x MIC_IN",
+			"y Headphone",		"y OUT",
+			"y IN",			"y Mic",
+			"z Headphone",		"z OUT",
+			"z IN",			"z Mic",
+			"m Headphone",		"m OUT",
+			"m IN",			"m Mic",
+			"n Headphone",		"n OUT",
+			"n IN",			"n Mic",
+			"o Headphone",		"o OUT",
+			"o IN",			"o Mic",
+			"a IN",			"a Mic",
+			"b IN",			"b Mic",
+			"c IN",			"c Mic",
+			"d IN",			"d Mic";
+//			"e Headphone",		"e OUT",
+//			"e IN",			"e Mic",
+//			"d1 Headphone",		"d1 OUT",
+//			"d2 Headphone",		"d2 OUT";
+
+            
+		rt565x_dai_link: nvidia,dai-link-1 {
+			link-name = "sgtl5000-codec";
+//			link-name = "fe-pi-audio-z-v2";
+			cpu-dai = <&tegra_i2s1>;
+			codec-dai = <&sgtl5000>;            
+			cpu-dai-name = "I2S1";
+			codec-dai-name = "sgtl5000";
+ 			format = "i2s";
+    		bit-format = "s16_le";
+//		    bitclock-master;
+//		    frame-master
+//    		name-prefix = "z";			
+			status = "okay";
+		};
+		dspk_1_dai_link: nvidia,dai-link-12 {
+			status = "disabled";
+		};
+		dspk_2_dai_link: nvidia,dai-link-13 {
+			status = "disabled";
+        };
+	};
+};

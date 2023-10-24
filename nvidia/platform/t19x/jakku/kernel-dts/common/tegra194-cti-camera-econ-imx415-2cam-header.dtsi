@@ -1,0 +1,57 @@
+#define  VI_ADDR   vi@15c10000
+#define  NVCSI_ADDR   nvcsi@15a00000
+#define  NUM_MIPI_CHAN   2
+#define  COMPATIBLE_STRING   "nvidia,eimx415"
+
+
+#define  I2C_ADDR   i2c@3180000
+
+#define  I2C_EXPANDER_ADDR   tca9546@70
+
+#define  BUS_WIDTH   2
+
+#define  NUM_OF_LANES   "2"
+
+#define VI_CSI_PORT_INDEX0  0
+#define VI_CSI_PORT_INDEX1  2
+
+#define  I2C0   i2c@0
+#define  I2C1   i2c@1
+
+#define  I2C_NODE_REG   0x42
+#define  I2C_NODE_REG   0x42
+#define  SENSOR_MODEL   "eimx415"
+
+
+#define  I2C0_NODE    eimx415_a@42
+#define  I2C1_NODE    eimx415_c@42
+
+#define  I2C0_NODE_SINTERFACE    "serial_a"
+#define  I2C1_NODE_SINTERFACE    "serial_c"
+
+#define  I2C0_NODE0_PORT_INDEX    0
+#define  I2C1_NODE0_PORT_INDEX    2
+
+#define TEGRA_CAM_PLAT_DATA 		num_csi_lanes = <4>; \
+								max_lane_speed = <1500000>; \
+								min_bits_per_pixel = <16>; \
+								vi_peak_byte_per_pixel = <2>; \
+								vi_bw_margin_pct = <25>; \
+								max_pixel_rate = <240000>; \
+								isp_peak_byte_per_pixel = <5>; \
+								isp_bw_margin_pct = <25>;
+
+#define MODULE0_BADGE    "imx415_front_econ_imx415"
+#define MODULE1_BADGE    "imx415_rear_econ_imx415"
+
+#define MODULE0_DEVNAME  "e-con_cam 9-0042"
+#define MODULE1_DEVNAME  "e-con_cam 10-0042"
+
+#define PROC_DEVICE_TREE_MODULE0  "/proc/device-tree/i2c@3180000/tca9546@70/i2c@0/eimx415_a@42"
+#define PROC_DEVICE_TREE_MODULE1  "/proc/device-tree/i2c@3180000/tca9546@70/i2c@1/eimx415_c@42"
+
+
+/{
+nvidia,dtsfilename = "tegra194-cti-camera-econ-imx415-2cam-header.dtsi";
+nvidia,dtbbuildtime = __DATE__, __TIME__;
+};

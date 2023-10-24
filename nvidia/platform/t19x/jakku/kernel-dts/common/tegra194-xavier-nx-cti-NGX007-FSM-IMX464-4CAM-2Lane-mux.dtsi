@@ -1,0 +1,170 @@
+/*
+ * tegra194-jakku-camera-imx464.dtsi - imx464 sensor device tree
+ *
+ * Copyright (c) 2019. FRAMOS.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms and conditions of the GNU General Public License,
+ * version 2, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "tegra194-xavier-nx-cti-NGX007-FSM-IMX464-4CAM-2Lane.dtsi"
+#include <dt-bindings/clock/tegra194-clock.h>
+
+#define CAM0_PWDN_0 TEGRA194_MAIN_GPIO(P, 4)
+#define CAM1_PWDN_0	TEGRA194_MAIN_GPIO(P, 5)
+#define CAM_VSYNC   TEGRA194_MAIN_GPIO(Q, 5)
+
+/* PCA9539 Pxx bus-port define*/
+#define CAM0_RST_0      0
+#define CAM1_RST_0      2
+#define CAM2_RST_0      4
+#define CAM3_RST_0      7
+#define CAM0_PWDN_1     1
+#define CAM1_PWDN_1     3
+#define CAM2_PWDN_0     5
+#define CAM2_PWDN_1     6
+#define CAM3_PWDN_0     8 // P10
+#define CAM3_PWDN_1     9 // P11
+#define MIPI_SW_SEL     10 // P12
+
+#define CAMERA_I2C_MUX_BUS(x) (0x1E + x)
+
+/ {
+	i2c@3180000 {
+		tca9539_77: gpio@77 {
+		    compatible = "ti,tca9539";
+		    reg = <0x77>;
+		    gpio-controller;
+		    #gpio-cells = <2>;
+		    vcc-supply = <&p3509_vdd_3v3_cvb>;
+            status = "okay";
+            tca9539_77_outlow {
+			    gpio-hog;
+			    output-low;
+			    gpios = <0 0 1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0>;
+			    label = "tca9539_77_outlow_0",
+				        "tca9539_77_outlow_1",
+				        "tca9539_77_outlow_2",
+				        "tca9539_77_outlow_3",
+				        "tca9539_77_outlow_4",
+				        "tca9539_77_outlow_5",
+                        "tca9539_77_outlow_6",
+                        "tca9539_77_outlow_7",
+                        "tca9539_77_outlow_8",
+                        "tca9539_77_outlow_9";
+                status = "okay";
+		    };
+			tca9539_77_outhigh {
+			    gpio-hog;
+			    output-high;
+			    gpios = <10 0>;
+			    label = "tca9539_77_outhigh_10";
+                status = "okay";
+		    };
+	    };
+
+	    tca9548@70 {
+		    compatible = "nxp,pca9548";
+		    reg = <0x70>;
+		    #address-cells = <1>;
+		    #size-cells = <0>;
+		    skip_mux_detect;
+            vcc-supply = <&p3509_vdd_3v3_cvb>;
+            force_bus_start = <CAMERA_I2C_MUX_BUS(0)>;
+            status = "okay";
+		    i2c@0 {
+			    reg = <0>;
+			    i2c-mux,deselect-on-exit;
+			    #address-cells = <1>;
+			    #size-cells = <0>;
+                status = "okay";
+			    imx464_a@1a {
+                    status = "okay";
+				    clocks = <&bpmp_clks TEGRA194_CLK_EXTPERIPH1>,
+					     	 <&bpmp_clks TEGRA194_CLK_EXTPERIPH1>;
+			    	clock-names = "extperiph1", "pllp_grtba";
+			    	mclk = "extperiph1";
+				    clock-frequency = <37125000>;
+					reset-gpios = <&tca9539_77 CAM0_RST_0 GPIO_ACTIVE_HIGH>;
+                    pwdn-gpios = <&tegra_main_gpio CAM0_PWDN_0 GPIO_ACTIVE_HIGH>;
+                    vsync-gpios = <&tegra_main_gpio CAM_VSYNC GPIO_ACTIVE_HIGH>;
+			    };
+		    };
+
+		    i2c@1 {
+			    reg = <1>;
+			    i2c-mux,deselect-on-exit;
+			    #address-cells = <1>;
+			    #size-cells = <0>;
+                status = "okay";
+			    imx464_c@1a {
+                    status = "okay";
+				    clocks = <&bpmp_clks TEGRA194_CLK_EXTPERIPH1>,
+					     	 <&bpmp_clks TEGRA194_CLK_EXTPERIPH1>;
+			    	clock-names = "extperiph1", "pllp_grtba";
+			    	mclk = "extperiph1";
+				    clock-frequency = <37125000>;
+				    reset-gpios = <&tca9539_77 CAM1_RST_0 GPIO_ACTIVE_HIGH>;
+                    pwdn-gpios = <&tegra_main_gpio CAM1_PWDN_0 GPIO_ACTIVE_HIGH>;
+                    vsync-gpios = <&tegra_main_gpio CAM_VSYNC GPIO_ACTIVE_HIGH>;
+			    };
+		    };
+
+            i2c@2 {
+			    reg = <2>;
+			    i2c-mux,deselect-on-exit;
+			    #address-cells = <1>;
+			    #size-cells = <0>;
+                status = "okay";
+			    imx464_d@1a {
+                    status = "okay";
+				    clocks = <&bpmp_clks TEGRA194_CLK_EXTPERIPH1>,
+					     	 <&bpmp_clks TEGRA194_CLK_EXTPERIPH1>;
+			    	clock-names = "extperiph1", "pllp_grtba";
+			    	mclk = "extperiph1";
+				    clock-frequency = <37125000>;
+				    reset-gpios = <&tca9539_77 CAM2_RST_0 GPIO_ACTIVE_HIGH>;
+                    pwdn-gpios = <&tca9539_77 CAM2_PWDN_0 GPIO_ACTIVE_HIGH>;
+                    vsync-gpios = <&tegra_main_gpio CAM_VSYNC GPIO_ACTIVE_HIGH>;
+			    };
+		    };
+
+            i2c@3 {
+			    reg = <3>;
+			    i2c-mux,deselect-on-exit;
+			    #address-cells = <1>;
+			    #size-cells = <0>;
+                status = "okay";
+			    imx464_e@1a {
+                    status = "okay";
+				    clocks = <&bpmp_clks TEGRA194_CLK_EXTPERIPH1>,
+					     	 <&bpmp_clks TEGRA194_CLK_EXTPERIPH1>;
+			    	clock-names = "extperiph1", "pllp_grtba";
+			    	mclk = "extperiph1";
+				    clock-frequency = <37125000>;
+				    reset-gpios = <&tca9539_77 CAM3_RST_0 GPIO_ACTIVE_HIGH>;
+                    pwdn-gpios = <&tca9539_77 CAM3_PWDN_0 GPIO_ACTIVE_HIGH>;
+                    vsync-gpios = <&tegra_main_gpio CAM_VSYNC GPIO_ACTIVE_HIGH>;
+			    };
+		    };
+	    };
+	};
+
+	gpio@2200000 {
+		camera-control-output-low {
+			gpio-hog;
+			output-low;
+			gpios = < CAM0_PWDN_0 0 CAM1_PWDN_0 0 >;
+			label = "cam0-pwdn0", "cam1-pwdn0";
+		};
+	};
+};

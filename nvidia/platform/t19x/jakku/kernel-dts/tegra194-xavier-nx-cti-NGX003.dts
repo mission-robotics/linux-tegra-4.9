@@ -1,0 +1,101 @@
+
+
+#include "tegra194-xavier-nx-cti-base.dtsi" 
+
+/ {
+    nvidia,dtsfilename = "tegra194-xavier-nx-cti-NGX003.dts";
+    xusb_padctl@3520000 {
+		ports {
+			usb2-0 {
+				mode = "host";
+				status = "okay";
+			};
+			usb2-1 {
+				mode = "host";
+				status = "okay";
+			};
+			usb2-2 {
+				mode = "host";
+				status = "okay";
+			};
+			usb3-2 {
+				nvidia,usb2-companion = <1>;
+				status = "okay";
+			};
+		};
+	};
+
+
+    sdhci@3440000 {
+        cd-gpios = <&tegra_main_gpio TEGRA194_MAIN_GPIO(Q, 2) 0>;
+        status = "okay";
+    };
+
+   pwm_fan_shared_data: pfsd
+   {
+        tach_gpio = <&tegra_main_gpio TEGRA194_MAIN_GPIO(N, 1) GPIO_ACTIVE_LOW>;
+        pwm_gpio = <&tegra_main_gpio TEGRA194_MAIN_GPIO(H, 1) GPIO_ACTIVE_LOW>;
+   };
+
+
+    /**define tca9539 i2c-0*/
+    i2c@c240000 {
+        status = "okay";
+        
+        cam_gpios:tca9539@74{
+            status = "okay";
+            compatible="ti,tca9539";
+            vcc-supply = <&battery_reg>;
+            gpio-controller;
+            #gpio-cells=<2>;
+            reg=<0x74>;
+        };
+    };	
+
+    /** define tlc59116PWR on i2c-1*/
+    i2c@31e0000 {
+        status = "okay";
+        rgb_leds:tlc59116@60{
+            status = "okay";            
+            compatible="ti,tlc59116";
+            #address-cells = <1>;
+            #size-cells = <0>;
+            reg=<0x60>;
+
+            red@0 {
+                label="red";
+                reg = <0x0>;
+            };
+            green@1 {
+                label="green";
+                reg = <0x1>;
+            };
+            blue@2 {
+                label="blue";
+                reg = <0x2>;
+            }; 
+
+        };
+    };
+	
+	/** required for i2c pins on P9 header*/
+	i2c@3180000 {
+		tca9546@70 {
+			compatible = "nxp,pca9544";
+			reg = <0x70>;
+			#address-cells = <1>;
+			#size-cells = <0>;			
+			//skip_mux_detect = "yes";
+			vif-supply = <&p3509_vdd_1v8_cvb>;
+			vcc-supply = <&p3509_vdd_1v8_cvb>;
+			vcc_lp = "vcc";
+		};
+	};
+
+};
+
+#if LINUX_VERSION >= 414
+#include <tegra194-linux-4.14.dtsi>
+#endif
+
+

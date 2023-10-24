@@ -1,0 +1,292 @@
+#include "tegra186-tx2-cti-base.dts"
+
+/{
+    nvidia,dtsfilename = "tegra186-tx2-cti-ASG007.dts";
+
+    gpio@2200000 {
+    /*enable this to enabled PCIe Controller #2*/
+        pcie0_lane2_mux {
+             status = "okay";
+        };
+    /******************************************/
+    /*enable these two to enable USB3 Port 0*/
+        e3325_sdio_rst {
+           status = "disabled";
+        };
+        e3325_lane0_mux {
+            status = "disabled";
+        };
+    /******************************************/
+
+    };
+    i2c@3160000 {
+
+        gpio@74{
+            status = "disabled";
+
+
+        };
+        gpio@77{
+            status = "disabled";
+
+        };
+
+        gpio@20 {
+            compatible = "nxp,pca9534";
+            status = "okay";
+            reg = <0x20>;
+            gpio-controller;
+            #gpio-cells = <2>;
+            vcc-supply = <&battery_reg>;
+        };
+
+    };
+
+
+
+    xhci@3530000 {
+        status = "okay";
+        phys = <&{/xusb_padctl@3520000/pads/usb2/lanes/usb2-0}>,
+            <&{/xusb_padctl@3520000/pads/usb2/lanes/usb2-1}>,
+            <&{/xusb_padctl@3520000/pads/usb2/lanes/usb2-2}>,
+            <&{/xusb_padctl@3520000/pads/usb3/lanes/usb3-1}>;
+        phy-names = "usb2-0", "usb2-1", "usb2-2", "usb3-1";
+    };
+
+
+   xusb_padctl@3520000 {
+        pads {
+            usb2 {
+                lanes {
+                    usb2-0 {
+                        status = "okay";
+                    };
+                    usb2-1 {
+                        status = "okay";
+                    };
+                    usb2-2 {
+                        status = "okay";
+                    };
+                };
+            };
+            usb3 {
+                lanes {
+                    usb3-0 {
+                        status = "disabled";
+                    };
+                    usb3-1 {
+                        status = "okay";
+                    };
+                    usb3-2 {
+                        status = "disabled";
+                    };
+                };
+            };
+        };
+        ports {
+            usb2-0 {
+                status = "okay";
+            };
+            usb2-1 {
+                status = "okay";
+            };
+
+            usb2-2 {
+                status = "okay";
+            };
+
+            usb3-0 {
+                nvidia,usb2-companion = <0>;
+                status = "disabled";
+            };
+            usb3-1 {
+                nvidia,usb2-companion = <1>;
+                status = "okay";
+            };
+            usb3-2 {
+                nvidia,usb2-companion = <2>;
+                status = "disabled";
+            };
+        };
+    };
+/*
+    pinctrl@3520000 {
+        status = "okay";
+           pinmux {
+            usb2-port0 {
+                status = "okay";
+            };
+            usb2-port1 {
+                status = "okay";
+            };
+
+            usb2-port2 {
+                status = "okay";
+            };
+
+            usb3-port0 {
+                status = "disabled";
+            };
+
+            usb3-port1 {
+                status = "okay";
+            };
+
+            usb3-port2 {
+                status = "disabled";
+            };
+        };
+    };
+*/
+
+        pinctrl@3520000 {
+                status = "okay";
+                pinctrl-0 = <&tegra_xusb_padctl_pinmux_default>;
+                pinctrl-1 = <&vbus_en0_sfio_tristate_state>;
+                pinctrl-2 = <&vbus_en1_sfio_tristate_state>;
+                pinctrl-3 = <&vbus_en0_sfio_passthrough_state>;
+                pinctrl-4 = <&vbus_en1_sfio_passthrough_state>;
+                pinctrl-5 = <&vbus_en0_default_state>;
+                pinctrl-6 = <&vbus_en1_default_state>;
+                pinctrl-names = "default",
+                        "vbus_en0_sfio_tristate", "vbus_en1_sfio_tristate",
+                        "vbus_en0_sfio_passthrough", "vbus_en1_sfio_passthrough",
+                        "vbus_en0_default", "vbus_en1_default";
+                tegra_xusb_padctl_pinmux_default: pinmux {
+                        /* Quill does not support usb3-micro AB */
+                        usb2-micro-AB {
+                                nvidia,lanes = "otg-0";
+                                nvidia,function = "xusb";
+                                nvidia,port-cap = <TEGRA_PADCTL_PORT_OTG_CAP>;
+                                nvidia,oc-pin = <0>;
+                        };
+                        usb2-std-A-port2 {
+                                nvidia,lanes = "otg-1";
+                                nvidia,function = "xusb";
+                                nvidia,port-cap = <TEGRA_PADCTL_PORT_HOST_ONLY>;
+                                nvidia,oc-pin = <1>;
+                        };
+                        usb3-std-A-port2 {
+                                nvidia,lanes = "usb3-1";
+                                nvidia,port-cap = <TEGRA_PADCTL_PORT_HOST_ONLY>;
+                                nvidia,oc-pin = <1>;
+                        };
+
+                        e3325-usb3-std-A-HS {
+                                nvidia,lanes = "otg-2";
+                                nvidia,function = "xusb";
+                                nvidia,port-cap = <TEGRA_PADCTL_PORT_HOST_ONLY>;
+                                status = "disabled";
+                        };
+
+                        e3325-usb3-std-A-SS {
+                                nvidia,lanes = "usb3-0";
+                                nvidia,port-cap = <TEGRA_PADCTL_PORT_HOST_ONLY>;
+                                status = "disabled";
+                        };
+                };
+        };
+
+
+        fixed-regulators {
+                regulator@1 {
+                        gpio = <&tegra_main_gpio TEGRA_MAIN_GPIO(P, 6) 0>;
+        };
+        regulator@2 {
+            regulator-always-on;
+            /delete-property/ gpio;
+            /delete-property/ enable-active-high;
+        };
+        regulator@3 {
+            regulator-always-on;
+            /delete-property/ gpio;
+
+        };
+        regulator@6 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@7 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@8 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@9 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@10 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@11 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@12 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@13 { //fixes PWM fan
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@15 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@17 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@118 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        };
+
+
+    pcie-controller@10003000 {
+        pci@1,0 {
+            nvidia,num-lanes = <2>;
+            status = "okay";
+        };
+        pci@2,0 {
+            nvidia,num-lanes = <1>;
+            status = "okay";
+        };
+        pci@3,0 {
+            nvidia,num-lanes = <1>;
+            status = "okay";
+        };
+    };
+    spi@c260000 {
+        status = "okay";
+        /delete-node/ spi-touch-sharp19x12@0;
+        can@0 {
+            status = "okay";
+            compatible = "microchip,mcp2515";
+            reg = <0>;
+            clocks = <&can_clock>;
+            interrupt-parent = <&tegra_main_gpio>;
+                /* the first cell defines the
+                    index of the interrupt within the controller, while the second cell is used
+                    to specify any of the following flags:
+                    - bits[3:0] trigger type and level flags
+                    1 = low-to-high edge triggered
+                    2 = high-to-low edge triggered
+                    4 = active high level-sensitive
+                    8 = active low level-sensitive
+                */
+          interrupts = <TEGRA_MAIN_GPIO(I, 4) 0x2>;
+          vdd-supply = <&battery_reg>;
+          xceiver-supply = <&battery_reg>;
+          spi-max-frequency=<6375000>;
+       };
+    };
+
+
+};

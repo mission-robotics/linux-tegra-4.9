@@ -1,0 +1,317 @@
+#include "tegra186-tx2i-cti-base.dts"
+
+/{
+    nvidia,dtsfilename = "tegra186-tx2i-cti-ASG006.dts";
+
+    gpio@2200000 {
+    /*enable this to enabled PCIe Controller #2*/
+        pcie0_lane2_mux {
+             status = "okay";
+        };
+    /******************************************/
+    /*enable these two to enable USB3 Port 0*/
+        e3325_sdio_rst {
+           status = "disabled";
+        };
+        e3325_lane0_mux {
+            status = "disabled";
+        };
+    /******************************************/
+
+    };
+	
+	pinmux@2430000 {
+		common {
+			gpio_cam4_pn3 {
+				nvidia,pins = "gpio_cam4_pn3";
+				nvidia,function = "spi4";
+				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+				nvidia,lpdr = <TEGRA_PIN_DISABLE>;
+			};
+
+			gpio_cam5_pn4 {
+				nvidia,pins = "gpio_cam5_pn4";
+				nvidia,function = "spi4";
+				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+				nvidia,tristate = <TEGRA_PIN_ENABLE>;
+				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+				nvidia,lpdr = <TEGRA_PIN_DISABLE>;
+			};
+
+			gpio_cam6_pn5 {
+				nvidia,pins = "gpio_cam6_pn5";
+				nvidia,function = "spi4";
+				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+				nvidia,lpdr = <TEGRA_PIN_DISABLE>;
+			};
+
+			gpio_cam7_pn6 {
+				nvidia,pins = "gpio_cam7_pn6";
+				nvidia,function = "spi4";
+				nvidia,pull = <TEGRA_PIN_PULL_UP>;
+				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+				nvidia,lpdr = <TEGRA_PIN_DISABLE>;
+			};
+		};
+	};
+
+
+
+    i2c@3160000 {
+        gpio@74{    //Camera GPIO
+            status = "okay";
+            vcc-supply = <&battery_reg>;
+
+            /*PN - This is really bad practice to use gpio-hog to reserve the GPIOs
+            The driver should really request them properly, maybe fix this in the
+            future*/
+
+            camera-rst{
+                gpio-hog;
+                output-low;
+                gpios = <1 0 3 0 5 0 7 0>;
+                label = "cam_c_rst", "cam_d_rst", "cam_e_rst", "cam_f_rst";
+
+            };
+
+        };
+        gpio@77{
+            status = "okay";
+            vcc-supply = <&battery_reg>;
+        };
+
+    };
+
+
+
+    xhci@3530000 {
+        status = "okay";
+        phys = <&{/xusb_padctl@3520000/pads/usb2/lanes/usb2-0}>,
+            <&{/xusb_padctl@3520000/pads/usb2/lanes/usb2-1}>,
+            <&{/xusb_padctl@3520000/pads/usb2/lanes/usb2-2}>,
+            <&{/xusb_padctl@3520000/pads/usb3/lanes/usb3-1}>,
+            <&{/xusb_padctl@3520000/pads/usb3/lanes/usb3-2}>;
+        phy-names = "usb2-0", "usb2-1", "usb2-2", "usb3-1", "usb3-2";
+    };
+
+
+   xusb_padctl@3520000 {
+        pads {
+            usb2 {
+                lanes {
+                    usb2-0 {
+                        status = "okay";
+                    };
+                    usb2-1 {
+                        status = "okay";
+                    };
+                    usb2-2 {
+                        status = "okay";
+                    };
+                };
+            };
+            usb3 {
+                lanes {
+                    usb3-0 {
+                        status = "disabled";
+                    };
+                    usb3-1 {
+                        status = "okay";
+                    };
+                    usb3-2 {
+                        status = "okay";
+                    };
+                };
+            };
+        };
+        ports {
+            usb2-0 {
+                status = "okay";
+            };
+            usb2-1 {
+                status = "okay";
+            };
+
+            usb2-2 {
+                status = "okay";
+            };
+
+            usb3-0 {
+                nvidia,usb2-companion = <0>;
+                status = "disabled";
+            };
+            usb3-1 {
+                nvidia,usb2-companion = <1>;
+                status = "okay";
+            };
+            usb3-2 {
+                nvidia,usb2-companion = <2>;
+                status = "okay";
+            };
+        };
+    };
+    pinctrl@3520000 {
+        status = "okay";
+           pinmux {
+            usb2-port0 {
+                status = "okay";
+            };
+            usb2-port1 {
+                status = "okay";
+            };
+
+            usb2-port2 {
+                status = "okay";
+            };
+
+            usb3-port0 {
+                status = "disabled";
+            };
+
+            usb3-port1 {
+                status = "okay";
+            };
+
+            usb3-port2 {
+                status = "okay";
+            };
+        };
+    };
+    pcie-controller@10003000 {
+        pci@1,0 {
+            nvidia,num-lanes = <1>;
+            status = "okay";
+        };
+        pci@2,0 {
+            nvidia,num-lanes = <0>;
+            status = "disabled";
+        };
+        pci@3,0 {
+            nvidia,num-lanes = <1>;
+            status = "okay";
+        };
+    };
+
+   //needed for the cameras setup before including any camera dtsi
+    i2c@c240000 {
+        tca9546@71 {
+            compatible = "nxp,pca9544";
+            reg = <0x71>;
+            #address-cells = <1>;
+            vcc-supply = <&battery_reg>;
+            vcc-pullup-supply = <&battery_reg>;
+            #size-cells = <0>;
+            vif-supply = <&battery_reg>;
+            //skip_mux_detect = "yes";
+            skip_mux_detect = "no";
+            vcc_lp = "vif";
+            force_bus_start = <0x22>;   //34
+
+            i2c@0 {
+                reg = <0>;
+                i2c-mux,deselect-on-exit;
+                #address-cells = <1>;
+                #size-cells = <0>;
+            };
+            i2c@1 {
+                reg = <1>;
+                i2c-mux,deselect-on-exit;
+                #address-cells = <1>;
+                #size-cells = <0>;
+            };
+            i2c@2 {
+                reg = <2>;
+                i2c-mux,deselect-on-exit;
+                #address-cells = <1>;
+                #size-cells = <0>;
+            };
+        };
+    };
+
+   //needed for the cameras setup before including any camera dtsi
+    i2c@3180000 {
+
+        //get rid of the mux in the defautl device tree to eliminate conflicts
+        /delete-node/ i2cmux@70;
+
+        tca9546@70 {
+            compatible = "nxp,pca9544";
+            reg = <0x70>;
+            #address-cells = <1>;
+            #size-cells = <0>;
+            vcc-supply = <&battery_reg>;
+            vcc-pullup-supply = <&battery_reg>;
+            vif-supply = <&battery_reg>;
+            //skip_mux_detect = "yes";
+            skip_mux_detect = "no";
+            vcc_lp = "vif";
+            force_bus_start = <0x1e>;   //30
+
+            i2c@0 {
+                reg = <0>;
+                i2c-mux,deselect-on-exit;
+                #address-cells = <1>;
+                #size-cells = <0>;
+            };
+            i2c@1 {
+                reg = <1>;
+                i2c-mux,deselect-on-exit;
+                #address-cells = <1>;
+                #size-cells = <0>;
+            };
+            i2c@2 {
+                reg = <2>;
+                i2c-mux,deselect-on-exit;
+                #address-cells = <1>;
+                #size-cells = <0>;
+            };
+
+
+        };
+    };
+	
+	spi@3240000 {
+		status = "okay";
+		spi@0 {
+			compatible = "tegra-spidev";
+			reg = <0x0>;
+			spi-max-frequency = <33000000>;
+			controller-data {
+				nvidia,enable-hw-based-cs;
+				nvidia,rx-clk-tap-delay = <0x8>;
+				nvidia,tx-clk-tap-delay = <0x16>;
+			};
+		};
+	};
+	
+    spi@c260000 {
+        status = "okay";
+        /delete-node/ spi-touch-sharp19x12@0;
+        can@0 {
+            status = "okay";
+            compatible = "microchip,mcp2515";
+            reg = <0>;
+            clocks = <&can_clock>;
+            interrupt-parent = <&tegra_main_gpio>;
+                    /* the first cell defines the
+                        index of the interrupt within the controller, while the second cell is used
+                        to specify any of the following flags:
+                        - bits[3:0] trigger type and level flags
+                        1 = low-to-high edge triggered
+                        2 = high-to-low edge triggered
+                        4 = active high level-sensitive
+                        8 = active low level-sensitive
+                    */
+            interrupts = <TEGRA_MAIN_GPIO(I, 4) 0x2>;
+            vdd-supply = <&battery_reg>;
+            xceiver-supply = <&battery_reg>;
+            spi-max-frequency=<6375000>;
+       };
+    };
+
+};

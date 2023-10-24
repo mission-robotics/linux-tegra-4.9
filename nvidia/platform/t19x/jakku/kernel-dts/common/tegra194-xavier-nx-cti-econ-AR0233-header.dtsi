@@ -1,0 +1,83 @@
+/*Following is a sample header for IMX390*/
+
+#define I2C_ADDR 				i2c@3180000
+#define VI_ADDR      			vi@15c10000
+#define NVCSI_ADDR				nvcsi@15a00000
+#define I2C_EXPANDER_ADDR		tca9544@70		//can be fixed in DT (node declared in mux file)
+#define NUM_MIPI_CHAN   		4
+#define COMPATIBLE_STRING		"nvidia,ar0233"
+
+#define BUS_WIDTH0	 				4
+#define BUS_WIDTH1	 				4
+#define BUS_WIDTH2	 				4
+#define BUS_WIDTH3	 				4
+
+#define CSI_PORT_INDEX0				2
+#define CSI_PORT_INDEX1				2
+#define CSI_PORT_INDEX2				0
+#define CSI_PORT_INDEX3				0
+
+
+#define VI_PORT_INDEX0				2
+#define VI_PORT_INDEX1				2
+#define VI_PORT_INDEX2				0
+#define VI_PORT_INDEX3				0
+
+#define I2C0 					i2c@0
+#define I2C1 					i2c@1
+
+
+// can be generated from sensor model + reg
+
+#define I2C0_NODE0				ar0233_a@43
+#define I2C0_NODE1				ar0233_b@44
+#define I2C1_NODE0				ar0233_c@43
+#define I2C1_NODE1				ar0233_d@44
+
+
+#define VC_ID0 					"1"
+#define VC_ID1 					"0"
+
+#define VC_ID0_ports 					1
+#define VC_ID1_ports 					0
+
+
+#define I2C_NODE0_REG			0x43
+#define I2C_NODE1_REG			0x44
+
+#define SENSOR_MODEL			"ar0233"
+#define NUM_OUTPUT_LANES		"2"
+
+#define I2C0_NODE0_SINTERFACE	"serial_c"
+#define I2C0_NODE1_SINTERFACE	"serial_c"
+#define I2C1_NODE0_SINTERFACE	"serial_a"
+#define I2C1_NODE1_SINTERFACE	"serial_a"
+
+//can be generated from Sinterface
+#define I2C0_NODE0_PORT_INDEX	2		
+#define I2C0_NODE1_PORT_INDEX	2		
+#define I2C1_NODE0_PORT_INDEX	0		
+#define I2C1_NODE1_PORT_INDEX	0
+
+#define MODULE0_BADGE    "ar0233_front_econ_ar0233"
+#define MODULE1_BADGE    "ar0233_rear_econ_ar0233"
+#define MODULE2_BADGE    "ar0233_centerright_econ_ar0233"
+#define MODULE3_BADGE    "ar0233_centerleft_econ_ar0233"
+
+#define MODULE0_DEVNAME			"ar0233 30-0043"
+#define MODULE1_DEVNAME			"ar0233 30-0044"
+#define MODULE2_DEVNAME			"ar0233 31-0043"
+#define MODULE3_DEVNAME			"ar0233 31-0044"
+
+
+#define PROC_DEVICE_TREE0		"/proc/device-tree/i2c@3180000/tca9544@70/i2c@0/ar0233_a@43"
+#define PROC_DEVICE_TREE1		"/proc/device-tree/i2c@3180000/tca9544@70/i2c@0/ar0233_b@44"
+#define PROC_DEVICE_TREE2		"/proc/device-tree/i2c@3180000/tca9544@70/i2c@1/ar0233_c@43"
+#define PROC_DEVICE_TREE3		"/proc/device-tree/i2c@3180000/tca9544@70/i2c@1/ar0233_d@44"
+
+
+
+/{
+    nvidia,dtsfilename = "tegra194-agx-cti-camera-AR0233-header.dtsi";
+    nvidia,dtbbuildtime = __DATE__, __TIME__;
+};

@@ -1,0 +1,219 @@
+/* Econ device tree for AR0230 support */
+
+#include "dt-bindings/clock/tegra194-clock.h"
+#include "tegra194-cti-camera-econ-ar0233-4cam-modes-header.dtsi"
+#include "tegra194-xavier-nx-cti-econ-AR0233-header.dtsi"
+#include "tegra194-cti-camera-4cam-1mux-base.dtsi"
+
+#define CAM0_PWDN	TEGRA194_MAIN_GPIO(P, 4)
+
+/* Enable Six overlays in Jetson Xavier NX */
+&head0 {
+	win-mask = <0x3f>;
+};
+
+/ {
+
+	/* set camera gpio direction to output */
+	gpio@2200000 {
+		camera-control-output-low {
+		 	gpio-hog;
+		 	output-low;
+		 	gpios = <CAM0_PWDN 0>;
+			label = "cam0-pwdn";
+		};
+	};
+	
+	i2c@31e0000 {
+	  	status = "okay";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpio@74{    //Camera GPIO
+			clock-frequency = <100000>;
+			tca9539_74: tca9539@74 {
+			compatible = "ti,tca9539";
+			gpio-controller;
+			#gpio-cells = <2>;
+			reg = <0x74>;
+			vcc-supply = <&battery_reg>;
+		 	status = "okay";
+			tca9539_74_outlow {
+		 		/*
+				 * GPIO-0  : RST_CAMA
+		 		 * GPIO-1  : BOOT_CAMA
+		 		 * GPIO-2  : RST_CAMB
+		 		 * GPIO-3  : BOOT_CAMB
+		 		 * GPIO-4  : RST_CAMC
+		 		 * GPIO-5  : BOOT_CAMC
+		 		 * GPIO-6  : RST_CAMD
+		 		 * GPIO-7  : BOOT_CAMD
+				 */
+		 		gpio-hog;
+		 		gpios = <0 0 1 0 2 0 3 0 4 0 5 0 6 0 7 0>;
+		 		output-low;
+		 		label = "tca9539_74_outlow_0",
+		 				"tca9539_74_outlow_1",
+		 				"tca9539_74_outlow_2",
+		 				"tca9539_74_outlow_3",
+		 				"tca9539_74_outlow_4",
+		 				"tca9539_74_outlow_5",
+		 				"tca9539_74_outlow_6",
+		 				"tca9539_74_outlow_7";
+		 	};
+			tca9539_74_outhigh {
+		 		status= "disabled";
+			};
+			tca9539_74_input {
+		 		status = "disabled";
+		 	};
+		 };
+	    };
+	};
+
+	i2c@3180000 {
+		status = "okay";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		tca9544@70 {
+            compatible = "nxp,pca9544";
+            reg = <0x70>;
+            #address-cells = <1>;
+            #size-cells = <0>;
+			vcc-supply = <&battery_reg>;
+			skip_mux_detect;
+            force_bus_start = <0x1e>;
+			i2c@0 {
+	            reg = <0>;
+    	   	    i2c-mux,deselect-on-exit;
+				#address-cells = <1>;
+             	#size-cells = <0>;	            		
+				ar0233_a@43 {
+				
+					avdd-reg = "vana";
+					iovdd-reg = "vif";
+					clocks = <&bpmp_clks  TEGRA194_CLK_EXTPERIPH1>,
+							 <&bpmp_clks TEGRA194_CLK_PLLP_OUT0>;
+					clock-names = "extperiph1", "pllp_grtba";
+					mclk = "extperiph1";
+					clock-frequency = <24000000>;
+					boot-gpios = <&tca9539_74 1 GPIO_ACTIVE_HIGH>;
+					reset-gpios = <&tca9539_74 0 GPIO_ACTIVE_HIGH>; 
+					vana-supply = <&battery_reg>;
+					vif-supply = <&battery_reg>;
+					use_sensor_mode_id = "false";
+					camera_mipi_lanes = <2>;
+					sio-port = "A";
+					deserializer-address = <0x48>;
+					serializer-address_1 = <0x40>;
+					serializer-address_2 = <0x41>;	
+					/*PWM CHIP 0 with default period for 30Hz*/
+					#pwm-cells = <1>;
+					pwms = <&tegra_pwm8 0 33333333>;				
+				};
+               	ar0233_b@44 {
+					
+                    avdd-reg = "vana";
+                    iovdd-reg = "vif";
+					clocks = <&bpmp_clks  TEGRA194_CLK_EXTPERIPH1>,
+								<&bpmp_clks TEGRA194_CLK_PLLP_OUT0>;
+                        		clock-names = "extperiph1", "pllp_grtba";
+                        		mclk = "extperiph1";
+                        		clock-frequency = <24000000>;
+					boot-gpios = <&tca9539_74 1 GPIO_ACTIVE_HIGH>;
+					reset-gpios = <&tca9539_74 0 GPIO_ACTIVE_HIGH>; 
+					vana-supply= <&battery_reg>;
+					vif-supply = <&battery_reg>;
+					use_sensor_mode_id = "false";
+					camera_mipi_lanes = <2>;
+					sio-port = "B";
+					deserializer-address = <0x48>;
+					serializer-address_1 = <0x40>;
+					serializer-address_2 = <0x41>;						
+					/*PWM CHIP 0 with default period for 30Hz*/
+					#pwm-cells = <1>;
+					pwms = <&tegra_pwm8 0 33333333>;
+       			};
+			};
+
+            i2c@1{                		
+               	reg = <1>;
+               	i2c-mux,deselect-on-exit;
+               	#address-cells = <1>;
+               	#size-cells = <0>;
+				ar0233_c@43 {
+					avdd-reg = "vana";
+					iovdd-reg = "vif";
+					clocks = <&bpmp_clks  TEGRA194_CLK_EXTPERIPH1>,
+							 <&bpmp_clks TEGRA194_CLK_PLLP_OUT0>;
+					clock-names = "extperiph1", "pllp_grtba";
+					mclk = "extperiph1";
+					clock-frequency = <24000000>;
+					boot-gpios = <&tca9539_74 3 GPIO_ACTIVE_HIGH>;
+					reset-gpios = <&tca9539_74 2 GPIO_ACTIVE_HIGH>; 
+					vana-supply = <&battery_reg>;
+					vif-supply = <&battery_reg>;
+					use_sensor_mode_id = "false";
+					camera_mipi_lanes = <2>;
+					sio-port = "A";
+					deserializer-address = <0x48>;
+					serializer-address_1 = <0x40>;
+					serializer-address_2 = <0x41>;					
+					/*PWM CHIP 0 with default period for 30Hz*/
+					#pwm-cells = <1>;
+					pwms = <&tegra_pwm8 0 33333333>;
+				};
+				ar0233_d@44 {			        	                       		
+                    avdd-reg = "vana";
+                   	iovdd-reg = "vif";
+					clocks = <&bpmp_clks  TEGRA194_CLK_EXTPERIPH1>,
+				 		<&bpmp_clks TEGRA194_CLK_PLLP_OUT0>;
+                   	clock-names = "extperiph1", "pllp_grtba";
+                   	mclk = "extperiph1";
+                   	clock-frequency = <24000000>;
+					boot-gpios = <&tca9539_74 3 GPIO_ACTIVE_HIGH>;
+					reset-gpios = <&tca9539_74 2 GPIO_ACTIVE_HIGH>; 
+					vana-supply = <&battery_reg>;
+					vif-supply = <&battery_reg>;
+					use_sensor_mode_id = "false";
+					camera_mipi_lanes = <2>;
+					sio-port = "B";
+					deserializer-address = <0x48>;
+					serializer-address_1 = <0x40>;
+					serializer-address_2 = <0x41>;	
+					/*PWM CHIP 0 with default period for 30Hz*/
+					#pwm-cells = <1>;
+					pwms = <&tegra_pwm8 0 33333333>;
+       			};
+          	};
+		};	
+	};
+
+	tegra-camera-platform {
+		compatible = "nvidia, tegra-camera-platform";
+		/**
+		* Physical settings to calculate max ISO BW
+		*
+		* num_csi_lanes = <>;
+		* Total number of CSI lanes when all cameras are active
+		*
+		* max_lane_speed = <>;
+		* Max lane speed in Kbit/s
+		*
+		* min_bits_per_pixel = <>;
+		* Min bits per pixel
+		*
+		* vi_peak_byte_per_pixel = <>;
+		* Max byte per pixel for the VI ISO case
+		*
+		* vi_bw_margin_pct = <>;
+		* Vi bandwidth margin in percentage
+		*
+		*/
+		num_csi_lanes = <8>;
+		max_lane_speed = <2500000>;
+		min_bits_per_pixel = <16>;
+		vi_peak_byte_per_pixel = <2>;
+		vi_bw_margin_pct = <67>;
+	};
+};
+

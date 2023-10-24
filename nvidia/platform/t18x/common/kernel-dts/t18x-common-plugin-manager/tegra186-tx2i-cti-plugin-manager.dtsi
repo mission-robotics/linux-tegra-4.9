@@ -1,0 +1,93 @@
+/*
+ * tegra186-quill-p3489-0000-a00-plugin-manager.dtsi: P3489 plugin manager
+ *
+ * Copyright (c) 2015-2019, NVIDIA CORPORATION.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ */
+
+#include "tegra186-soc-prod-plugin-manager.dtsi"
+#include "tegra186-odm-data-plugin-manager.dtsi"
+
+/ {
+	eeprom-manager {
+		data-size = <0x100>;
+		boardid-with-revision = <3489>;
+		boardid-with-config = <3489>;
+		bus@0 {
+			i2c-bus = <&gen8_i2c>;
+			eeprom@0 {
+				slave-address = <0x50>;
+				label = "cvm";
+			};
+			eeprom@1 {
+				slave-address = <0x57>;
+				label = "cvb";
+			};
+		};
+		bus@1 {
+			i2c-bus = <&gen2_i2c>;
+			eeprom@0 {
+				slave-address = <0x51>;
+			};
+		};
+		bus@2 {
+			i2c-bus = <&gen1_i2c>;
+			eeprom@0 {
+				slave-address = <0x50>;
+			};
+		};
+		bus@3 {
+			i2c-bus = <&cam_i2c>;
+			eeprom@0 {
+				slave-address = <0x54>;
+				label = "cam";
+				enable-gpio = <2 9>;
+			};
+			eeprom@1 {
+				slave-address = <0x57>;
+				label = "cam";
+				enable-gpio = <2 9>;
+			};
+		};
+	};
+	plugin-manager {
+		fragment-e3320-dp {
+			ids = ">=3320-1000-000", ">=3320-1100-000";
+			override@0 {
+				target = <&{/host1x}>;
+				_overlay_ {
+					nvdisplay@15220000 {
+						status = "okay";
+					};
+					sor {
+						status = "okay";
+						dp-display {
+							status = "okay";
+						};
+					};
+					dpaux@155c0000 {
+						status = "okay";
+					};
+				};
+			};
+		};
+		
+		fragment-comms-ethernet {
+			ids = ">=3489-0001-300";
+			override@0 {
+				target = <&{/ether_qos@2490000}>;
+				_overlay_ {
+					status = "disabled";
+				};
+			};
+		};
+	};
+};

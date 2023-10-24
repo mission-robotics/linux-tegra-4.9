@@ -1,0 +1,124 @@
+/*
+ * Copyright (c) 2015-2019, FRAMOS CORPORATION.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#define CAM0_RST_L	TEGRA194_MAIN_GPIO(H, 3)
+#define CAM0_PWDN	TEGRA194_MAIN_GPIO(P, 4)
+#define CAM1_PWDN	TEGRA194_MAIN_GPIO(P, 5)
+
+#define CAMERA_I2C_MUX_BUS(x) (0x1E + x)
+
+/ {
+
+    framos_platform_adapter {
+		cam,use-cam-gpio = "true"; 
+    };
+	
+	host1x {
+		vi@15c10000 {
+			framos_channel;
+		};
+	};
+
+	gpio@2200000 {
+		camera-control-output-low {
+			gpio-hog;
+			output-low;
+			gpios = <CAM0_RST_L 0>;
+			label = "cam0-rst";
+		};
+		camera-control-output-high {
+			gpio-hog;
+			output-high;
+			gpios = <CAM0_PWDN 0 CAM1_PWDN 0>;
+			label = "cam0-pwdn", "cam1-pwdn";
+		};
+	};
+
+	i2c@3180000 {
+		tca9548@70 {
+			compatible = "nxp,pca9548";
+			reg = <0x70>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			skip_mux_detect;
+			vcc-supply = <&p3509_vdd_1v8_cvb>;
+            force_bus_start = <CAMERA_I2C_MUX_BUS(0)>;
+
+            /* Channel connected to J5 */
+			i2c@0 {
+				reg = <0>;
+				i2c-mux,deselect-on-exit;
+				#address-cells = <1>;
+				#size-cells = <0>;
+            };
+
+            /* Channel connected to J5 */
+			i2c@1 {
+				reg = <1>;
+				i2c-mux,deselect-on-exit;
+				#address-cells = <1>;
+				#size-cells = <0>;
+            };
+
+            /* Channel connected to J6 */
+			i2c@2 {
+				reg = <2>;
+				i2c-mux,deselect-on-exit;
+				#address-cells = <1>;
+				#size-cells = <0>;
+            };
+
+            /* Channel connected to J6 */
+			i2c@3 {
+				reg = <3>;
+				i2c-mux,deselect-on-exit;
+				#address-cells = <1>;
+				#size-cells = <0>;
+            };
+
+            /* Channel connected to J7 */
+            i2c@4 {
+				reg = <4>;
+				i2c-mux,deselect-on-exit;
+				#address-cells = <1>;
+				#size-cells = <0>;
+            };
+
+            /* Channel connected to J8 */
+            i2c@6 {
+				reg = <6>;
+				i2c-mux,deselect-on-exit;
+				#address-cells = <1>;
+				#size-cells = <0>;
+            };
+
+			i2c@7 { /* Broadcast MUX channel */
+				reg = <7>;
+				i2c-mux,deselect-on-exit;
+				#address-cells = <1>;
+				#size-cells = <0>;
+                broadcast_i2c_dev@38 {
+                    compatible = "framos, mux_broadcast_ch";
+                    device = "i2c-mux";
+                    reg = <0x38>;
+                    status = "okay";
+                };
+
+            };
+        };
+	};
+};

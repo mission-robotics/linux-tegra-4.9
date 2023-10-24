@@ -1,0 +1,343 @@
+
+#include <t18x-common-platforms/tegra186-quill-common-p3310-1000-a00.dtsi>
+//#include <t18x-common-platforms/tegra186-quill-power-tree-p3310-1000-a00-00.dtsi>
+#include <t18x-common-platforms/tegra186-tx2-cti-power-tree.dtsi>
+//#include <t18x-common-platforms/tegra186-quill-camera-modules.dtsi>
+#include <t18x-common-modules/tegra186-display-e3320-1000-a00.dtsi>
+
+
+/* comms dtsi file should be included after gpio dtsi file */
+#include <t18x-common-platforms/tegra186-quill-comms.dtsi>
+#include <t18x-common-plugin-manager/tegra186-tx2-cti-plugin-manager.dtsi>
+//#include <t18x-common-modules/tegra186-super-module-e2614-p2597-1000-a00.dtsi>
+#include <t18x-common-plugin-manager/tegra186-quill-display-plugin-manager.dtsi>
+#include <t18x-common-prod/tegra186-priv-quill-p3310-1000-a00-prod.dtsi>
+//#include <t18x-common-plugin-manager/tegra186-quill-camera-plugin-manager.dtsi>
+#include "cti_common/tegra186-tx2-cti-usb-pcie-base.dtsi"
+
+/ {
+    model = "quill";
+	compatible = "nvidia,quill", "nvidia,p2597-0000+p3310-1000", "nvidia,tegra186";
+    nvidia,boardids = "3310:0000:C03";
+    nvidia,proc-boardid = "3310:0000:C03";
+
+	nvidia,dtsfilename = __FILE__;
+	nvidia,dtbbuildtime = __DATE__, __TIME__;
+	nvidia,fastboot-usb-vid = <0x0955>;
+	nvidia,fastboot-usb-pid = <0xee16>;
+
+    chosen {
+        board-has-eeprom;
+        bootargs ="console=ttyS0,115200 androidboot.presilicon=true firmware_class.path=/etc/firmware";
+        stdout-path = &uarta;
+		nvidia,tegra-joint_xpu_rail;
+    };
+
+    firmware {
+        android {
+            compatible = "android,firmware";
+            hardware = "quill";
+            vbmeta {
+                compatible = "android,vbmeta";
+                parts = "vbmeta,kernel,kernel-dtb,kernel-dtbo,APP,vendor,SOS";
+            };
+            fstab {
+                compatible = "android,fstab";
+                vendor {
+                    compatible = "android,vendor";
+                    dev = "/dev/block/platform/3460000.sdhci/by-name/vendor";
+                    type = "ext4";
+                    mnt_flags = "ro";
+                    fsmgr_flags = "wait,avb";
+                };
+                odm {
+                    compatible = "android,odm";
+                    dev = "/dev/block/platform/3460000.sdhci/by-name/odm";
+                    type = "ext4";
+                    mnt_flags = "ro";
+                    fsmgr_flags = "wait,avb";
+                };
+            };
+        };
+    };
+
+    memory@80000000 {
+        device_type = "memory";
+        reg = <0x0 0x80000000 0x0 0x70000000>;
+    };
+
+//every mainline character seems to share the same pins for fan and tach
+   pwm_fan_shared_data: pfsd
+   {
+        tach_gpio = <&tegra_main_gpio TEGRA_MAIN_GPIO(X, 4) GPIO_ACTIVE_LOW>;
+   };
+
+
+    i2c@3160000 {
+
+        gpio@74{
+            status = "disabled";
+            /delete-node/ touch-rails;
+
+        };
+        gpio@77{
+            status = "disabled";
+            /delete-node/ lcd-bias-rails;
+
+        };
+
+        lp8557-backlight-s-wuxga-8-0@2c {
+            status = "disabled";
+        };
+    };
+
+    i2c@c240000 {
+        clock-frequency = <400000>;
+    };
+	
+	spi@3240000 {
+		status = "disabled";
+	};
+	
+	cpufreq@e070000 {
+		cpu_emc_map =
+			< 499200  204000>,
+			< 652800  408000>,
+			<1420800  665600>,
+			<1920000 1866000>;
+	};
+
+    cpus {
+        status = "disabled";
+    };
+    host1x {
+        sor {
+            status = "disabled";
+            dp-display {
+                status = "disabled";
+            };
+            hdmi-display {
+                status = "disabled";
+            };
+
+            panel-s-edp-uhdtv-15-6 {
+                smartdimmer {
+                    status = "disabled";
+                };
+            };
+        };
+
+        dpaux@155c0000 {
+            status = "disabled";
+        };
+
+        sor1 {
+            status = "okay";
+            nvidia,active-panel = <&sor1_hdmi_display>;
+            hdmi-display {
+                status = "okay";
+            };
+            dp-display {
+                status = "disabled";
+            };
+        };
+
+        nvdisplay@15200000 {
+            status = "disabled";
+        };
+
+        nvdisplay@15220000 {
+            status = "disabled";
+        };
+    };
+
+
+	pinmux@2430000 {
+		common {
+			gpio_edp2_pp5 {
+				status = "okay";
+			};
+
+			gpio_edp3_pp6 {
+				status = "okay";
+			};
+		};
+	};
+
+	gpio@2200000 {
+		sdmmc-wake-support-input {
+			status = "okay";
+		};
+
+		sdmmc-wake-support-output {
+			status = "okay";
+		};
+	};
+
+
+	sdhci@3400000 {
+		cd-gpios = <&tegra_main_gpio TEGRA_MAIN_GPIO(P, 5) 0>;
+		nvidia,cd-wakeup-capable;
+	};
+
+/*	i2c@3160000 {
+        /delete-node/ ina3221x@40;
+		/delete-node/ ina3221x@41;
+
+	};*/
+
+	i2c@c240000 {
+		bmi160@69 {
+			compatible = "bmi,bmi160";
+			reg = <0x69>;
+			interrupt-parent = <&tegra_aon_gpio>;
+			interrupts = <TEGRA_AON_GPIO(AA, 2) 0x01>;
+			accelerometer_matrix    = [01 00 00 00 01 00 00 00 01];
+			gyroscope_matrix        = [01 00 00 00 01 00 00 00 01];
+			accelerometer_delay_us_min = <1250>;
+			gyroscope_delay_us_min = <1250>;
+			vdd-supply = <&spmic_sd3>;
+			vdd_IO-supply = <&spmic_sd3>;
+			status = "disabled";
+		};
+	};
+
+	mttcan@c310000 {
+		status = "disabled";
+		gpio_can_stb = <&tegra_aon_gpio TEGRA_AON_GPIO(AA, 0) GPIO_ACTIVE_HIGH>;
+		gpio_can_en = <&tegra_aon_gpio TEGRA_AON_GPIO(AA, 1) GPIO_ACTIVE_HIGH>;
+	};
+
+	mttcan@c320000 {
+		status = "disabled";
+		gpio_can_stb = <&tegra_aon_gpio TEGRA_AON_GPIO(AA, 6) GPIO_ACTIVE_HIGH>;
+		gpio_can_en = <&tegra_aon_gpio TEGRA_AON_GPIO(AA, 7) GPIO_ACTIVE_HIGH>;
+	};
+
+	ahci-sata@3507000 {
+		gpios = <&spmic 7 0>;
+	};
+
+
+    bluedroid_pm {
+        bluedroid_pm,reset-gpio = <&tegra_main_gpio TEGRA_MAIN_GPIO(H, 5) 0>;
+    };
+
+	fixed-regulators {
+		regulator@1 {
+			gpio = <&tegra_main_gpio TEGRA_MAIN_GPIO(P, 6) 0>;
+        };
+        regulator@2 {
+            regulator-always-on;
+            /delete-property/ gpio;
+            /delete-property/ enable-active-high;
+        };
+        regulator@3 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@6 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@7 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@8 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@9 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@10 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@11 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@12 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@13 { //fixes PWM fan
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@15 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@17 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+        regulator@118 {
+            regulator-always-on;
+            /delete-property/ gpio;
+        };
+	};
+
+	bpmp_i2c {
+		spmic@3c {
+			pinmux@0 {
+				pin_gpio2 {
+					status = "disabled";
+				};
+				pin_gpio3 {
+					status = "disabled";
+				};
+				pin_gpio7 {
+					drive-push-pull = <1>;
+				};
+			};
+
+			regulators {
+				ldo0 {
+					maxim,active-fps-source = <MAX77620_FPS_SRC_NONE>;
+				};
+
+				ldo6 {
+					maxim,active-fps-source = <MAX77620_FPS_SRC_NONE>;
+					regulator-boot-on;
+					regulator-always-on;
+				};
+
+				ldo7 {
+					regulator-min-microvolt = <1000000>;
+					regulator-max-microvolt = <1000000>;
+				};
+
+				ldo8 {
+					regulator-name = "dvdd-pex";
+					regulator-min-microvolt = <1000000>;
+					regulator-max-microvolt = <1000000>;
+				};
+			};
+		};
+	};
+    can_clock: can_clock{
+        compatible = "fixed-clock";
+        #clock-cells = <0>;
+        clock-frequency = <20000000>;
+        clock-accuracy = <100>;
+    };
+	
+	tegra_udrm: tegra_udrm {
+		compatible = "nvidia,tegra-udrm";
+	};
+
+	soctherm-oc-event {
+		status = "okay";
+	};
+
+};
+
+#if LINUX_VERSION >= 414
+#include <tegra186-linux-4.14.dtsi>
+#endif
+                   
