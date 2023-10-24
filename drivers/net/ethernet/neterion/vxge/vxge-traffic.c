@@ -1745,8 +1745,8 @@ void vxge_hw_fifo_txdl_free(struct __vxge_hw_fifo *fifo, void *txdlh)
 enum vxge_hw_status
 vxge_hw_vpath_mac_addr_add(
 	struct __vxge_hw_vpath_handle *vp,
-	u8 (macaddr)[ETH_ALEN],
-	u8 (macaddr_mask)[ETH_ALEN],
+	u8* macaddr,
+	u8* macaddr_mask,
 	enum vxge_hw_vpath_mac_addr_add_mode duplicate_mode)
 {
 	u32 i;
@@ -1808,8 +1808,8 @@ exit:
 enum vxge_hw_status
 vxge_hw_vpath_mac_addr_get(
 	struct __vxge_hw_vpath_handle *vp,
-	u8 (macaddr)[ETH_ALEN],
-	u8 (macaddr_mask)[ETH_ALEN])
+	u8* macaddr,
+	u8* macaddr_mask)
 {
 	u32 i;
 	u64 data1 = 0ULL;
@@ -1860,8 +1860,8 @@ exit:
 enum vxge_hw_status
 vxge_hw_vpath_mac_addr_get_next(
 	struct __vxge_hw_vpath_handle *vp,
-	u8 (macaddr)[ETH_ALEN],
-	u8 (macaddr_mask)[ETH_ALEN])
+	u8* macaddr,
+	u8* macaddr_mask)
 {
 	u32 i;
 	u64 data1 = 0ULL;
@@ -1913,8 +1913,8 @@ exit:
 enum vxge_hw_status
 vxge_hw_vpath_mac_addr_delete(
 	struct __vxge_hw_vpath_handle *vp,
-	u8 (macaddr)[ETH_ALEN],
-	u8 (macaddr_mask)[ETH_ALEN])
+	u8* macaddr,
+	u8* macaddr_mask)
 {
 	u32 i;
 	u64 data1 = 0ULL;
