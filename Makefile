@@ -2,7 +2,7 @@
 VERSION = 4
 PATCHLEVEL = 9
 SUBLEVEL = 299
-EXTRAVERSION =
+EXTRAVERSION = -cti-quark
 NAME = Roaring Lionus
 
 ifeq ($(KERNEL_OVERLAYS),)
