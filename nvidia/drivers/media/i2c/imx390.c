@@ -1,7 +1,9 @@
 /*
- * imx390.c - imx390 sensor driver
+ * Driver for IMX390 CMOS Image Sensor from Leopard Imaging Inc.
+ * Copyright (C) 2021, Jason Zhao <jianfeiz@leopardimaging.com>
  *
- * Copyright (c) 2018-2020, NVIDIA CORPORATION.  All rights reserved.
+ * Based on Sony imx390 sensor driver from Nvidia
+ * Copyright (c) 2016-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -586,6 +588,12 @@ static int imx390_board_setup(struct imx390 *priv)
 		goto error;
 	}
 
+	err = of_property_read_u32(node, "reg_mux", &priv->g_ctx.reg_mux);
+	if (err < 0) {
+		dev_err(dev, "reg_mux not found\n");
+ 		goto error;
+ 	}
+
 	err = of_property_read_u32(node, "def-addr",
 					&priv->g_ctx.sdev_def);
 	if (err < 0) {
@@ -838,12 +846,14 @@ static int imx390_probe(struct i2c_client *client,
 	if (err) {
 		dev_err(&client->dev,
 			"%s gmsl serdes setup failed\n", __func__);
+		max9296_sdev_unregister(priv->dser_dev, priv->g_ctx.s_dev);
 		return err;
 	}
 
 	err = tegracam_v4l2subdev_register(tc_dev, true);
 	if (err) {
 		dev_err(dev, "tegra camera subdev registration failed\n");
+		max9296_sdev_unregister(priv->dser_dev, priv->g_ctx.s_dev);
 		return err;
 	}
 
@@ -901,6 +911,5 @@ module_init(imx390_init);
 module_exit(imx390_exit);
 
 MODULE_DESCRIPTION("Media Controller driver for Sony IMX390");
-MODULE_AUTHOR("NVIDIA Corporation");
-MODULE_AUTHOR("Sudhir Vyas <svyas@nvidia.com");
+MODULE_AUTHOR("JianFei Zhao <ZJF@leopardimaging.com>");
 MODULE_LICENSE("GPL v2");

@@ -997,12 +997,13 @@ static int __init pca953x_init(void)
 /* register after i2c postcore initcall and before
  * subsys initcalls that may rely on these GPIOs
  */
-subsys_initcall(pca953x_init);
+//subsys_initcall(pca953x_init);
 
 static void __exit pca953x_exit(void)
 {
 	i2c_del_driver(&pca953x_driver);
 }
+fs_initcall_sync(pca953x_init);
 module_exit(pca953x_exit);
 
 MODULE_AUTHOR("eric miao <eric.miao@marvell.com>");

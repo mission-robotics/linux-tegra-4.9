@@ -1,0 +1,221 @@
+ar0234.c:57:	dev_dbg(&priv->i2c_client->dev, "%s: power on\n", __func__);
+ar0234.c:62:			dev_err(&priv->i2c_client->dev,"%s failed.\n", __func__);
+ar0234.c:91:        dev_err(&priv->i2c_client->dev,"%s failed.\n", __func__);
+ar0234.c:134:	        pw->mclk = devm_clk_get(&priv->i2c_client->dev, mclk_name);
+ar0234.c:136:			dev_err(&priv->i2c_client->dev, "unable to get clock %s\n",
+ar0234.c:143:		        parent = devm_clk_get(&priv->i2c_client->dev, parentclk_name);
+ar0234.c:145:				dev_err(&priv->i2c_client->dev,
+ar0234.c:155:            camera_common_regulator_get(&priv->i2c_client->dev, &pw->avdd,
+ar0234.c:160:            camera_common_regulator_get(&priv->i2c_client->dev, &pw->iovdd,
+ar0234.c:164:		dev_err(&priv->i2c_client->dev, "%s: unable to get regulator(s)\n", __func__);
+ar0234.c:176:	struct camera_common_data *s_data = to_camera_common_data(&client->dev);
+ar0234.c:202:	struct camera_common_data *s_data = to_camera_common_data(&client->dev);
+ar0234.c:216:	struct camera_common_data *s_data = to_camera_common_data(&client->dev);
+ar0234.c:235:	struct camera_common_data *s_data = to_camera_common_data(&client->dev);
+ar0234.c:260:				  	dev_err(&client->dev, "(%s) mcu_stream_config failure. retrying \n", __func__);
+ar0234.c:267:				dev_err(&client->dev, "%s: Failed stream_config \n", __func__);
+ar0234.c:307:	struct camera_common_data *s_data = to_camera_common_data(&client->dev);
+ar0234.c:356:			  	dev_err(&client->dev, "%s: Stream_config failure. retrying \n", __func__);
+ar0234.c:363:			dev_err(&client->dev, "%s: Failed stream_config \n", __func__);
+ar0234.c:438:		dev_err(&client->dev," %s (%d ) \n", __func__, __LINE__);
+ar0234.c:499:		dev_err(&client->dev, "Error Enumerating Control 0x%08x !! \n",
+ar0234.c:537:	dev_err(&client->dev,
+ar0234.c:558:			dev_err(&client->dev, "Init ctrls failure. retrying\n");
+ar0234.c:566:	  	dev_err(&client->dev, "(%s): Unable to init ctrls \n",__func__);
+ar0234.c:593:	struct device_node *node = client->dev.of_node;
+ar0234.c:602:	match = of_match_device(cam_of_match, &client->dev);
+ar0234.c:604:		dev_err(&client->dev, "Failed to find matching dt id\n");
+ar0234.c:609:	    devm_kzalloc(&client->dev, sizeof(*board_priv_pdata), GFP_KERNEL);
+ar0234.c:615:		dev_err(&client->dev, "pwdn gpios not in DT\n");
+ar0234.c:623:		dev_dbg(&client->dev, "reset gpios not in DT\n");
+ar0234.c:638:		dev_dbg(&client->dev, "avdd, iovdd-reg not in DT, assume sensor powered independently\n");
+ar0234.c:647:	devm_kfree(&client->dev, board_priv_pdata);
+ar0234.c:668:		.addr = client->addr,
+ar0234.c:675:	ret = i2c_transfer(client->adapter, &msg, 1);
+ar0234.c:682:	dev_err(&client->dev, "Failed reading register ret = %d!\n", ret);
+ar0234.c:690:		.addr = client->addr,
+ar0234.c:696:	ret = i2c_transfer(client->adapter, &msg, 1);
+ar0234.c:698:		dev_err(&client->dev, "Failed writing register ret = %d!\n",
+ar0234.c:744:	struct camera_common_data *s_data = to_camera_common_data(&client->dev);
+ar0234.c:822:		dev_err(&client->dev," %s(%d) Error - %d \n", __func__,
+ar0234.c:832:			dev_err(&client->dev,
+ar0234.c:853:			dev_err(&client->dev,
+ar0234.c:864:	dev_err(&client->dev," %s(%d) Error - %d \n", __func__,
+ar0234.c:881:	struct camera_common_data *s_data = to_camera_common_data(&client->dev);
+ar0234.c:928:		dev_err(&client->dev," %s(%d) Error - %d \n", __func__,
+ar0234.c:936:		dev_err(&client->dev," %s(%d) Error - %d \n", __func__,
+ar0234.c:946:		dev_err(&client->dev," %s(%d) CRC 0x%02x != 0x%02x \n",
+ar0234.c:959:		dev_err(&client->dev," %s(%d) Errcode - 0x%02x \n",
+ar0234.c:970:		dev_err(&client->dev," %s(%d) Error - %d \n", __func__,
+ar0234.c:981:		dev_err(&client->dev," %s(%d) CRC 0x%02x != 0x%02x \n",
+ar0234.c:990:		dev_err(&client->dev," %s(%d) Errcode - 0x%02x \n",
+ar0234.c:1022:	struct camera_common_data *s_data = to_camera_common_data(&client->dev);
+ar0234.c:1089:		dev_err(&client->dev," %s(%d) Error - %d \n", __func__,
+ar0234.c:1099:			dev_err(&client->dev," %s(%d) Error \n",
+ar0234.c:1162:			dev_err(&client->dev," %s(%d) Error - %d \n",
+ar0234.c:1170:			dev_err(&client->dev," %s(%d) Error - %d \n",
+ar0234.c:1211:			dev_err(&client->dev," %s(%d) Error - %d \n",
+ar0234.c:1360:		dev_err(&client->dev," %s(%d) Error - %d \n", __func__,
+ar0234.c:1368:		dev_err(&client->dev," %s(%d) Error - %d \n", __func__,
+ar0234.c:1378:		dev_err(&client->dev," %s(%d) CRC 0x%02x != 0x%02x \n",
+ar0234.c:1388:		dev_err(&client->dev," %s(%d) Errcode - 0x%02x \n",
+ar0234.c:1397:		dev_err(&client->dev," %s(%d) Error - %d \n", __func__,
+ar0234.c:1408:		dev_err(&client->dev," %s(%d) CRC 0x%02x != 0x%02x \n",
+ar0234.c:1417:		dev_err(&client->dev," %s(%d) Errcode - 0x%02x \n",
+ar0234.c:1433:		    devm_kzalloc(&client->dev,((mcu_ui_info->ctrl_ui_data.ctrl_menu_info.num_menu_elem +1) * sizeof(char *)), GFP_KERNEL);
+ar0234.c:1436:			    devm_kzalloc(&client->dev,MAX_CTRL_UI_STRING_LEN, GFP_KERNEL);
+ar0234.c:1495:				dev_err(&client->dev, "MCU MIPI CONF Error\n");
+ar0234.c:1505:                dev_err(&client->dev," %s(%d) MCU Set Ctrl Error - %d \n", __func__,
+ar0234.c:1515:                        dev_err(&client->dev," %s(%d) MCU Get CMD Status Error \n", __func__,
+ar0234.c:1529:                       dev_err(&client->dev, 
+ar0234.c:1569:                        dev_err(&client->dev," %s(%d) Error - %d \n",
+ar0234.c:1580:			dev_err(&client->dev," %s(%d) Error - %d \n",
+ar0234.c:1587:			dev_err(&client->dev," %s(%d) Error - %d \n",
+ar0234.c:1596:			dev_err(&client->dev,
+ar0234.c:1612:			dev_err(&client->dev,
+ar0234.c:1621:			dev_err(&client->dev," %s(%d) Error - %d \n",
+ar0234.c:1632:			dev_err(&client->dev,
+ar0234.c:1641:			dev_err(&client->dev,
+ar0234.c:1732:			dev_err(&client->dev," %s(%d) MCU CMD ID Write PKT fw Version Error - %d \n", __func__,
+ar0234.c:1740:			dev_err(&client->dev," %s(%d) MCU CMD ID Read PKT fw Version Error - %d \n", __func__,
+ar0234.c:1750:			dev_err(&client->dev," %s(%d) MCU CMD ID fw Version Error CRC 0x%02x != 0x%02x \n",
+ar0234.c:1758:			dev_err(&client->dev," %s(%d) MCU CMD ID fw Errcode - 0x%02x \n", __func__,
+ar0234.c:1770:			dev_err(&client->dev," %s(%d) MCU fw CMD ID Read Version Error - %d \n", __func__,
+ar0234.c:1780:			dev_err(&client->dev," %s(%d) MCU fw  CMD ID Version CRC ERROR 0x%02x != 0x%02x \n",
+ar0234.c:1789:			dev_err(&client->dev," %s(%d) MCU fw CMD ID Read Payload Error - 0x%02x \n", __func__,
+ar0234.c:1806:		dev_err(&client->dev, "Forced Update Enabled - Firmware Version - (%.32s) \n",
+ar0234.c:1814:			dev_dbg(&client->dev, "Previous Firmware Version - (%.32s)\n", fw_version);
+ar0234.c:1815:			dev_dbg(&client->dev, "Current Firmware Version - (%.32s)\n", txt_fw_version);
+ar0234.c:1856:		dev_err(&client->dev," %s(%d) Error - %d \n", __func__,
+ar0234.c:1864:		dev_err(&client->dev," %s(%d) Error - %d \n", __func__,
+ar0234.c:1874:		dev_err(&client->dev," %s(%d) CRC 0x%02x != 0x%02x \n",
+ar0234.c:1882:		dev_err(&client->dev," %s(%d) Errcode - 0x%02x \n",
+ar0234.c:1894:		dev_err(&client->dev," %s(%d) Error - %d \n", __func__,
+ar0234.c:1904:		dev_err(&client->dev," %s(%d) CRC 0x%02x != 0x%02x \n",
+ar0234.c:1913:		dev_err(&client->dev," %s(%d) Errcode - 0x%02x \n",
+ar0234.c:1954:		dev_err(&client->dev," %s(%d) Error - %d \n", __func__,
+ar0234.c:1963:		dev_err(&client->dev," %s(%d) Error - %d \n", __func__,
+ar0234.c:1972:		dev_err(&client->dev," %s(%d) CRC 0x%02x != 0x%02x \n",
+ar0234.c:2012:                dev_err(&client->dev," %s(%d) MCU Stream OFF Write Error - %d \n", __func__,
+ar0234.c:2024:                       dev_err(&client->dev," %s(%d) MCU Get CMD Stream Off Error \n", __func__,
+ar0234.c:2039:                       dev_err(&client->dev, 
+ar0234.c:2065:		dev_err(&client->dev," %s(%d) Error \n", __func__, __LINE__);
+ar0234.c:2071:		dev_err(&client->dev," Already Initialized !! \n");
+ar0234.c:2092:		dev_err(&client->dev," %s(%d) Error - %d \n", __func__,
+ar0234.c:2104:			dev_err(&client->dev," %s(%d) Error \n",
+ar0234.c:2111:			dev_err(&client->dev,"ISP Already Initialized !! \n");
+ar0234.c:2118:			dev_err(&client->dev,
+ar0234.c:2124:	dev_err(&client->dev,"ETIMEDOUT Error\n");
+ar0234.c:2171:		dev_err(&client->dev,"Write Failed \n");
+ar0234.c:2178:		dev_err(&client->dev,"Read Failed \n");
+ar0234.c:2184:		dev_err(&client->dev," NACK Received... exiting.. \n");
+ar0234.c:2190:		dev_err(&client->dev,"Read Failed \n");
+ar0234.c:2196:		dev_err(&client->dev,"Read Failed\n");
+ar0234.c:2222:		dev_err(&client->dev," Invalid Checksum 0x%02x != 0x%02x !! \n",
+ar0234.c:2252:			dev_err(&client->dev,"Write Failed \n");
+ar0234.c:2259:			dev_err(&client->dev,"Read Failed \n");
+ar0234.c:2265:			dev_err(&client->dev," NACK Received... exiting.. \n");
+ar0234.c:2279:			dev_err(&client->dev,"Write Failed \n");
+ar0234.c:2286:			dev_err(&client->dev,"Read Failed \n");
+ar0234.c:2292:			dev_err(&client->dev," NACK Received... exiting.. \n");
+ar0234.c:2307:			dev_err(&client->dev,"Write Failed \n");
+ar0234.c:2315:			dev_err(&client->dev,"Read Failed \n");
+ar0234.c:2324:			dev_err(&client->dev," NACK Received... exiting.. \n");
+ar0234.c:2337:		dev_err(&client->dev,"Unhandled Command Type \n");
+ar0234.c:2353:		dev_err(&client->dev,"Write Failed \n");
+ar0234.c:2359:		dev_err(&client->dev,"Failed Read 1 \n");
+ar0234.c:2373:		dev_err(&client->dev,"Write Failed \n");
+ar0234.c:2379:		dev_err(&client->dev,"Failed Read 1 \n");
+ar0234.c:2385:		dev_err(&client->dev," NACK Received... exiting.. \n");
+ar0234.c:2413:				dev_err(&client->dev,"Error in Processing Commands \n");
+ar0234.c:2422:				dev_err(&client->dev,
+ar0234.c:2432:				dev_err(&client->dev,
+ar0234.c:2467:			dev_err(&client->dev,"Write Failed \n");
+ar0234.c:2474:			dev_err(&client->dev,"Read Failed \n");
+ar0234.c:2480:			dev_err(&client->dev," NACK Received... exiting.. \n");
+ar0234.c:2490:			dev_err(&client->dev,"Write Failed \n");
+ar0234.c:2497:			dev_err(&client->dev,"Read Failed \n");
+ar0234.c:2503:			dev_err(&client->dev," NACK Received... exiting.. \n");
+ar0234.c:2520:			dev_err(&client->dev,"Write Failed \n");
+ar0234.c:2528:			dev_err(&client->dev,"Read Failed \n");
+ar0234.c:2537:			dev_err(&client->dev," NACK Received... exiting.. \n");
+ar0234.c:2560:		dev_err(&client->dev,"Write Failed \n");
+ar0234.c:2567:		dev_err(&client->dev,"Read Failed \n");
+ar0234.c:2573:		dev_err(&client->dev," NACK Received... exiting.. \n");
+ar0234.c:2586:		dev_err(&client->dev,"Write Failed \n");
+ar0234.c:2593:		dev_err(&client->dev,"Read Failed \n");
+ar0234.c:2599:		dev_err(&client->dev," NACK Received... exiting.. \n");
+ar0234.c:2608:		dev_err(&client->dev,"Write Failed \n");
+ar0234.c:2615:		dev_err(&client->dev,"Read Failed \n");
+ar0234.c:2621:		dev_err(&client->dev," NACK Received... exiting.. \n");
+ar0234.c:2627:		dev_err(&client->dev,"Read Failed \n");
+ar0234.c:2646:			dev_err(&client->dev," i2c_bload_read FAIL !! \n");
+ar0234.c:2660:			dev_err(&client->dev," i2c_bload_read FAIL !! \n");
+ar0234.c:2668:		dev_err(&client->dev," CRC verification fail !! 0x%04x != 0x%04x \n",
+ar0234.c:2687:		dev_err(&client->dev," Error in Get Version \n");
+ar0234.c:2696:		dev_err(&client->dev," Error in Erase Flash \n");
+ar0234.c:2704:		dev_err(&client->dev," Write Flash FAIL !! \n");
+ar0234.c:2710:		dev_err(&client->dev," verify_flash FAIL !! \n");
+ar0234.c:2717:		dev_err(&client->dev," i2c_bload_go FAIL !! \n");
+ar0234.c:2733:	struct device_node *node = client->dev.of_node;
+ar0234.c:2751:		dev_err(&client->dev, "Unable to toggle RESET GPIO\n");
+ar0234.c:2758:		dev_err(&client->dev, "Unable to toggle BOOT GPIO\n");
+ar0234.c:2764:		dev_err(&client->dev,"%s[%d]:GPIO reset Fail, err:%d",__func__,__LINE__, err);
+ar0234.c:2770:		dev_err(&client->dev,"%s[%d]:%dGPIO boot Fail\n",__func__,__LINE__,err);
+ar0234.c:2775:                dev_err(&client->dev, "Can not get Camera MIPI Lanes\n");
+ar0234.c:2782:		dev_err(&client->dev, "camera mipi clk is missing or invalid\n");
+ar0234.c:2789:	    devm_kzalloc(&client->dev,
+ar0234.c:2795:	    devm_kzalloc(&client->dev,
+ar0234.c:2804:		dev_err(&client->dev, "unable to get platform data\n");
+ar0234.c:2810:	priv->subdev->dev = &client->dev;
+ar0234.c:2811:	priv->s_data->dev = &client->dev;
+ar0234.c:2816:	dev_info(&client->dev, "MIPI Clock = %d, MIPI Lanes = %d \n", priv->mipi_clk_config, priv->mipi_lane_config);
+ar0234.c:2838:			dev_err(&client->dev," Trying to Detect Bootloader mode\n");	
+ar0234.c:2853:				dev_err(&client->dev," Get Bload Version Success\n");
+ar0234.c:2860:			dev_err(&client->dev, "Error updating firmware \n");
+ar0234.c:2880:				dev_err(&client->dev," Get FW Version Success\n");
+ar0234.c:2885:			dev_err(&client->dev, "Error updating firmware \n");
+ar0234.c:2899:			dev_err(&client->dev, "%s, mcu_mipi_configuration lane failure. retrying \n", __func__);
+ar0234.c:2906:	  	dev_err(&client->dev, "%s, Failed mcu_mipi_configuration lane \n", __func__);
+ar0234.c:2913:			dev_err(&client->dev, "%s, mcu_mipi_configuration clk failure. retrying \n", __func__);
+ar0234.c:2920:	  	dev_err(&client->dev, "%s, Failed mcu_mipi_configuration clk \n", __func__);
+ar0234.c:2928:			dev_err(&client->dev, "%s, init controls failure. retrying \n", __func__);
+ar0234.c:2935:	  	dev_err(&client->dev, "%s, Failed to init controls \n", __func__);
+ar0234.c:2943:			dev_err(&client->dev, "%s, init formats failure. retrying \n", __func__);
+ar0234.c:2951:	  	dev_err(&client->dev, "%s, Failed to init formats!\n", __func__);
+ar0234.c:2955:	priv->mcu_ctrl_info = devm_kzalloc(&client->dev, sizeof(ISP_CTRL_INFO) * priv->num_ctrls, GFP_KERNEL);
+ar0234.c:2957:		dev_err(&client->dev, "Unable to allocate memory \n");
+ar0234.c:2961:	priv->ctrldb = devm_kzalloc(&client->dev, sizeof(uint32_t) * priv->num_ctrls, GFP_KERNEL);
+ar0234.c:2963:		dev_err(&client->dev, "Unable to allocate memory \n");
+ar0234.c:2967:	priv->stream_info = devm_kzalloc(&client->dev, sizeof(ISP_STREAM_INFO) * (frm_fmt_size + 1), GFP_KERNEL);
+ar0234.c:2969:	priv->streamdb = devm_kzalloc(&client->dev, sizeof(int) * (frm_fmt_size + 1), GFP_KERNEL);
+ar0234.c:2971:		dev_err(&client->dev,"Unable to allocate memory \n");
+ar0234.c:2975:	priv->mcu_cam_frmfmt = devm_kzalloc(&client->dev, sizeof(struct camera_common_frmfmt) * (frm_fmt_size), GFP_KERNEL);
+ar0234.c:2977:		dev_err(&client->dev, "Unable to allocate memory \n");
+ar0234.c:2985:			dev_err(&client->dev, "INIT ISP failure. retrying\n");
+ar0234.c:2993:	  	dev_err(&client->dev, "Unable to INIT ISP \n");
+ar0234.c:3000:			dev_err(&client->dev, "Get MCU Sensor ID failure. retrying \n");
+ar0234.c:3007:	  	dev_err(&client->dev, "Unable to get MCU Sensor ID.");
+ar0234.c:3017:	    		dev_err(&client->dev, "Stream_Off failure. retrying \n");
+ar0234.c:3024:		dev_err(&client->dev,"%s (%d) Stream_Off \n", __func__, __LINE__);
+ar0234.c:3029:		priv->mcu_cam_frmfmt[loop].framerates = devm_kzalloc(&client->dev, sizeof(int) * MAX_NUM_FRATES, GFP_KERNEL);
+ar0234.c:3031:			dev_err(&client->dev, "Unable to allocate memory \n");
+ar0234.c:3040:			dev_err(&client->dev, "List Fmts failure. retrying\n");
+ar0234.c:3048:	  	dev_err(&client->dev, "Unable to List Fmts. \n");
+ar0234.c:3072:	priv->subdev->dev = &client->dev;
+ar0234.c:3073:	priv->s_data->dev = &client->dev;
+ar0234.c:3078:		dev_err(&client->dev, "Failed to initialize cam.\n");
+ar0234.c:3115:		dev_err(&client->dev, "unable to init media entity\n");
+ar0234.c:3134:	struct camera_common_data *s_data = to_camera_common_data(&client->dev);
+ar0234.c:3153:		FREE_SAFE(&client->dev, priv->mcu_ctrl_info->ctrl_ui_data.ctrl_menu_info.menu[loop]);
+ar0234.c:3156:	FREE_SAFE(&client->dev, priv->mcu_ctrl_info->ctrl_ui_data.ctrl_menu_info.menu);
+ar0234.c:3158:	FREE_SAFE(&client->dev, priv->mcu_ctrl_info);
+ar0234.c:3161:		FREE_SAFE(&client->dev, (void *)priv->mcu_cam_frmfmt[loop].framerates);
+ar0234.c:3164:	FREE_SAFE(&client->dev, priv->mcu_cam_frmfmt);
+ar0234.c:3166:	FREE_SAFE(&client->dev, priv->ctrldb);
+ar0234.c:3167:	FREE_SAFE(&client->dev, priv->streamdb);
+ar0234.c:3169:	FREE_SAFE(&client->dev, priv->stream_info);
+ar0234.c:3170:	FREE_SAFE(&client->dev, fw_version);
+ar0234.c:3171:	FREE_SAFE(&client->dev, priv->pdata);
+ar0234.c:3172:	FREE_SAFE(&client->dev, priv->s_data);
+ar0234.c:3173:	FREE_SAFE(&client->dev, priv);

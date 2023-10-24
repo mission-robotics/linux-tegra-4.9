@@ -107,30 +107,6 @@ void kvm_arch_check_processor_compat(void *rtn)
 	*(int *)rtn = 0;
 }
 
-int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
-			    struct kvm_enable_cap *cap)
-{
-	int r;
-
-	if (cap->flags)
-		return -EINVAL;
-
-	switch (cap->cap) {
-	case KVM_CAP_ARM_NISV_TO_USER:
-		r = 0;
-		kvm->arch.return_nisv_io_abort_to_user = true;
-		break;
-	case KVM_CAP_ARM_IDSR_TO_USER:
-		r = 0;
-		kvm->arch.return_idsr_to_user = true;
-		break;
-	default:
-		r = -EINVAL;
-		break;
-	}
-
-	return r;
-}
 
 /**
  * kvm_arch_init_vm - initializes a VM data structure
@@ -159,6 +135,7 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
 		goto out_free_stage2_pgd;
 
 	kvm_vgic_early_init(kvm);
+	kvm_timer_init(kvm);
 
 	/* Mark the initial VMID generation invalid */
 	kvm->arch.vmid_gen = 0;
@@ -230,8 +207,6 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
 	case KVM_CAP_ARM_PSCI_0_2:
 	case KVM_CAP_READONLY_MEM:
 	case KVM_CAP_MP_STATE:
-	case KVM_CAP_ARM_NISV_TO_USER:
-	case KVM_CAP_ARM_IDSR_TO_USER:
 		r = 1;
 		break;
 	case KVM_CAP_COALESCED_MMIO:
@@ -245,13 +220,6 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
 		break;
 	case KVM_CAP_MAX_VCPUS:
 		r = KVM_MAX_VCPUS;
-		break;
-	case KVM_CAP_ARM_USER_IRQ:
-		/*
-		 * 1: EL1_VTIMER, EL1_PTIMER, and PMU.
-		 * (bump this number if adding more devices)
-		 */
-		r = 1;
 		break;
 	default:
 		r = kvm_arch_dev_ioctl_check_extension(kvm, ext);
@@ -327,8 +295,7 @@ void kvm_arch_vcpu_destroy(struct kvm_vcpu *vcpu)
 
 int kvm_cpu_has_pending_timer(struct kvm_vcpu *vcpu)
 {
-	return kvm_timer_should_fire(vcpu_vtimer(vcpu)) ||
-	       kvm_timer_should_fire(vcpu_ptimer(vcpu));
+	return kvm_timer_should_fire(vcpu);
 }
 
 void kvm_arch_vcpu_blocking(struct kvm_vcpu *vcpu)
@@ -540,11 +507,13 @@ static int kvm_vcpu_first_run_init(struct kvm_vcpu *vcpu)
 			return ret;
 	}
 
-	ret = kvm_timer_enable(vcpu);
-	if (ret)
-		return ret;
-
-	ret = kvm_arm_pmu_v3_enable(vcpu);
+	/*
+	 * Enable the arch timers only if we have an in-kernel VGIC
+	 * and it has been properly initialized, since we cannot handle
+	 * interrupts from the virtual timer with a userspace gic.
+	 */
+	if (irqchip_in_kernel(kvm) && vgic_initialized(kvm))
+		ret = kvm_timer_enable(vcpu);
 
 	return ret;
 }
@@ -629,12 +598,6 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *run)
 			return ret;
 	}
 
-	if (run->exit_reason == KVM_EXIT_ARM_IDSR) {
-		ret = kvm_handle_idsr_return(vcpu, vcpu->run);
-		if (ret)
-			return ret;
-	}
-
 	if (vcpu->sigset_active)
 		sigprocmask(SIG_SETMASK, &vcpu->sigset, &sigsaved);
 
@@ -664,14 +627,9 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *run)
 		local_irq_disable();
 
 		/*
-		 * If we have a singal pending, or need to notify a userspace
-		 * irqchip about timer or PMU level changes, then we exit (and
-		 * update the timer level state in kvm_timer_update_run
-		 * below).
+		 * Re-check atomic conditions
 		 */
-		if (signal_pending(current) ||
-		    kvm_timer_should_notify_user(vcpu) ||
-		    kvm_pmu_should_notify_user(vcpu)) {
+		if (signal_pending(current)) {
 			ret = -EINTR;
 			run->exit_reason = KVM_EXIT_INTR;
 		}
@@ -742,10 +700,6 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *run)
 
 		ret = handle_exit(vcpu, run, ret);
 	}
-
-	/* Tell userspace about in-kernel device output levels */
-	kvm_timer_update_run(vcpu);
-	kvm_pmu_update_run(vcpu);
 
 	if (vcpu->sigset_active)
 		sigprocmask(SIG_SETMASK, &sigsaved, NULL);
@@ -1153,7 +1107,6 @@ static void cpu_hyp_reinit(void)
 		 * event was cancelled before the CPU was reset.
 		 */
 		__cpu_init_stage2();
-		kvm_timer_init_vhe();
 	} else {
 		if (__hyp_get_vectors() == hyp_default_vectors)
 			cpu_init_hyp_mode(NULL);

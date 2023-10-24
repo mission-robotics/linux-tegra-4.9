@@ -24,6 +24,7 @@
 #define TEGRA_WIDTH_ALIGNMENT	1
 /* Stride alignment */
 #define TEGRA_STRIDE_ALIGNMENT	1
+#define TEGRA_FRAMOS_STRIDE_ALIGNMENT	256
 /* Height alignment */
 #define TEGRA_HEIGHT_ALIGNMENT	1
 /* Size alignment */

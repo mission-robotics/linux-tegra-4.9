@@ -259,44 +259,52 @@ static int imx477_set_exposure(struct tegracam_device *tc_dev, s64 val)
 	struct device *dev = tc_dev->dev;
 	const struct sensor_mode_properties *mode =
 	    &s_data->sensor_props.sensor_modes[s_data->mode_prop_idx];
-
 	int err = 0;
+	int i = 0;
 	imx477_reg ct_regs[2];
 	const s32 max_coarse_time = priv->frame_length - IMX477_MAX_COARSE_DIFF;
-	const s32 fine_integ_time_factor = priv->fine_integ_time *
-	    mode->control_properties.exposure_factor /
-	    mode->signal_properties.pixel_clock.val;
-	u32 coarse_time;
-	int i;
+	u32 coarse_time = 0;
+	u32 fine_int_time = 0;
+	u32 int_factor = val * mode->signal_properties.pixel_clock.val /
+	    mode->control_properties.exposure_factor;
+
+	coarse_time = int_factor / mode->image_properties.line_length;
+	fine_int_time = int_factor % mode->image_properties.line_length;
 
 	dev_dbg(dev, "%s: Setting exposure control to: %lld\n", __func__, val);
 
-	coarse_time = (val - fine_integ_time_factor)
-	    * mode->signal_properties.pixel_clock.val
-	    / mode->control_properties.exposure_factor
-	    / mode->image_properties.line_length;
+	dev_dbg(dev, "%s: Calculated coarse time: %d [lines]\n",
+		__func__, coarse_time);
+	dev_dbg(dev, "%s: Calculated fine integration time: %d [pixels]\n",
+		__func__, fine_int_time);
 
 	if (coarse_time < IMX477_MIN_COARSE_EXPOSURE)
 		coarse_time = IMX477_MIN_COARSE_EXPOSURE;
 	else if (coarse_time > max_coarse_time) {
 		coarse_time = max_coarse_time;
-		dev_dbg(dev,
+		dev_err(dev,
 			"%s: exposure limited by frame_length: %d [lines]\n",
 			__func__, max_coarse_time);
 	}
-
-	dev_dbg(dev, "%s: val: %lld [us], coarse_time: %d [lines]\n",
-		__func__, val, coarse_time);
 
 	imx477_get_coarse_integ_time_regs(ct_regs, coarse_time);
 
 	for (i = 0; i < 2; i++) {
 		err = imx477_write_reg(s_data, ct_regs[i].addr, ct_regs[i].val);
 		if (err) {
-			dev_dbg(dev,
+			dev_err(dev,
 				"%s: coarse_time control error\n", __func__);
 			return err;
 		}
+	}
+
+	err = imx477_write_reg(s_data, IMX477_FINE_INTEG_TIME_ADDR_MSB,
+			       (fine_int_time >> 8) & 0xFF);
+	err |= imx477_write_reg(s_data, IMX477_FINE_INTEG_TIME_ADDR_LSB,
+				fine_int_time & 0xFF);
+
+	if (err) {
+		dev_err(dev, "%s: fine integration time error\n", __func__);
 	}
 
 	return err;

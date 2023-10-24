@@ -230,45 +230,11 @@ static void kvm_pmu_update_state(struct kvm_vcpu *vcpu)
 		return;
 
 	overflow = !!kvm_pmu_overflow_status(vcpu);
-	if (pmu->irq_level == overflow)
-		return;
-
-	pmu->irq_level = overflow;
-
-	if (likely(irqchip_in_kernel(vcpu->kvm))) {
-		int ret;
-		ret = kvm_vgic_inject_irq(vcpu->kvm, vcpu->vcpu_id,
-					  pmu->irq_num, overflow);
-		WARN_ON(ret);
+	if (pmu->irq_level != overflow) {
+		pmu->irq_level = overflow;
+		kvm_vgic_inject_irq(vcpu->kvm, vcpu->vcpu_id,
+				    pmu->irq_num, overflow);
 	}
-}
-
-bool kvm_pmu_should_notify_user(struct kvm_vcpu *vcpu)
-{
-	struct kvm_pmu *pmu = &vcpu->arch.pmu;
-	struct kvm_sync_regs *sregs = &vcpu->run->s.regs;
-	bool run_level = sregs->device_irq_level & KVM_ARM_DEV_PMU;
-
-	if (likely(irqchip_in_kernel(vcpu->kvm)))
-		return false;
-
-	return pmu->irq_level != run_level;
-}
-
-/*
- * Reflect the PMU overflow interrupt output level into the kvm_run structure
- */
-void kvm_pmu_update_run(struct kvm_vcpu *vcpu)
-{
-	struct kvm_sync_regs *regs = &vcpu->run->s.regs;
-
-	if (likely(irqchip_in_kernel(vcpu->kvm)))
-		return;
-
-	/* Populate the timer bitmap for user space */
-	regs->device_irq_level &= ~KVM_ARM_DEV_PMU;
-	if (vcpu->arch.pmu.irq_level)
-		regs->device_irq_level |= KVM_ARM_DEV_PMU;
 }
 
 /**
@@ -454,50 +420,29 @@ bool kvm_arm_support_pmu_v3(void)
 	return (perf_num_counters() > 0);
 }
 
-int kvm_arm_pmu_v3_enable(struct kvm_vcpu *vcpu)
-{
-	if (!vcpu->arch.pmu.created)
-		return 0;
-
-	/*
-	 * A valid interrupt configuration for the PMU is either to have a
-	 * properly configured interrupt number and using an in-kernel
-	 * irqchip, or to neither set an IRQ nor create an in-kernel irqchip.
-	 */
-	if (kvm_arm_pmu_irq_initialized(vcpu) != irqchip_in_kernel(vcpu->kvm))
-		return -EINVAL;
-
-	kvm_pmu_vcpu_reset(vcpu);
-	vcpu->arch.pmu.ready = true;
-
-	return 0;
-}
-
 static int kvm_arm_pmu_v3_init(struct kvm_vcpu *vcpu)
 {
 	if (!kvm_arm_support_pmu_v3())
 		return -ENODEV;
 
-	if (!test_bit(KVM_ARM_VCPU_PMU_V3, vcpu->arch.features))
+	/*
+	 * We currently require an in-kernel VGIC to use the PMU emulation,
+	 * because we do not support forwarding PMU overflow interrupts to
+	 * userspace yet.
+	 */
+	if (!irqchip_in_kernel(vcpu->kvm) || !vgic_initialized(vcpu->kvm))
+		return -ENODEV;
+
+	if (!test_bit(KVM_ARM_VCPU_PMU_V3, vcpu->arch.features) ||
+	    !kvm_arm_pmu_irq_initialized(vcpu))
 		return -ENXIO;
 
-	if (vcpu->arch.pmu.created)
+	if (kvm_arm_pmu_v3_ready(vcpu))
 		return -EBUSY;
 
-	if (irqchip_in_kernel(vcpu->kvm)) {
-		/*
-		 * If using the PMU with an in-kernel virtual GIC
-		 * implementation, we require the GIC to be already
-		 * initialized when initializing the PMU.
-		 */
-		if (!vgic_initialized(vcpu->kvm))
-			return -ENODEV;
+	kvm_pmu_vcpu_reset(vcpu);
+	vcpu->arch.pmu.ready = true;
 
-		if (!kvm_arm_pmu_irq_initialized(vcpu))
-			return -ENXIO;
-	}
-
-	vcpu->arch.pmu.created = true;
 	return 0;
 }
 
@@ -536,9 +481,6 @@ int kvm_arm_pmu_v3_set_attr(struct kvm_vcpu *vcpu, struct kvm_device_attr *attr)
 		int __user *uaddr = (int __user *)(long)attr->addr;
 		int irq;
 
-		if (!irqchip_in_kernel(vcpu->kvm))
-			return -EINVAL;
-
 		if (!test_bit(KVM_ARM_VCPU_PMU_V3, vcpu->arch.features))
 			return -ENODEV;
 
@@ -572,9 +514,6 @@ int kvm_arm_pmu_v3_get_attr(struct kvm_vcpu *vcpu, struct kvm_device_attr *attr)
 	case KVM_ARM_VCPU_PMU_V3_IRQ: {
 		int __user *uaddr = (int __user *)(long)attr->addr;
 		int irq;
-
-		if (!irqchip_in_kernel(vcpu->kvm))
-			return -EINVAL;
 
 		if (!test_bit(KVM_ARM_VCPU_PMU_V3, vcpu->arch.features))
 			return -ENODEV;

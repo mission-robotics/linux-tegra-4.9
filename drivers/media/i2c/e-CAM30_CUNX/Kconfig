@@ -1,0 +1,10 @@
+config VIDEO_ECAM
+    tristate "e-con camera sensor support"
+    depends on I2C && VIDEO_V4L2 && VIDEO_V4L2_SUBDEV_API
+    ---help---
+      This is a Video4Linux2 sensor-level driver for the e-con Systems
+      camera.
+
+      To compile this driver as a module, choose M here: the module
+      will be called based on sensor name.
+

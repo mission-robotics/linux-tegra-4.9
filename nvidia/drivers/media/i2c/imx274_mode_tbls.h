@@ -155,7 +155,7 @@ static const imx274_reg mode_3840X2160[] = {
 };
 
 /* Mode 1 : 3840X2160 10 bits 60fps*/
-static const imx274_reg mode_3840X2160_60fps[] = {
+static const imx274_reg mode_3840X2160_60fps_4lane[] = {
 	{IMX274_TABLE_WAIT_MS, IMX274_WAIT_MS},
 	{0x3000, 0x12}, /* mode select streaming on */
 	/* input freq. 24M */
@@ -199,6 +199,107 @@ static const imx274_reg mode_3840X2160_60fps[] = {
 	{0x30E2, 0x01},
 	{0x30F6, 0x07},
 	{0x30F7, 0x01},
+
+//	{0x30F6, 0x0e}, // HMAX , 263
+//	{0x30F7, 0x02}, // HMAX
+	{0x30F8, 0xC6},
+	{0x30F9, 0x11},
+	{0x3130, 0x78}, /*WRITE_VSIZE*/
+	{0x3131, 0x08},
+	{0x3132, 0x70}, /*Y_OUT_SIZE*/
+	{0x3133, 0x08},
+
+	/* crop */
+	{0x30DD, 0x01}, /*VWIDCUTEN*/
+	{0x30DE, 0x04}, /*VWIDCUT*/
+	{0x30E0, 0x03}, /*VWINCUTPOS*/
+	{0x3037, 0x01}, /*HTRIMMING_EN*/
+	{0x3038, 0x0C}, /*HTRIMMING_START*/
+	{0x3039, 0x00},
+	{0x303A, 0x0C}, /*HTRIMMING_END*/
+	{0x303B, 0x0F},
+
+	/* mode setting */
+	{0x3004, 0x01},
+	{0x3005, 0x01},
+	{0x3006, 0x00},
+	{0x3007, 0x02},
+	{0x300C, 0x0C}, /* SHR: Minimum 12 */
+	{0x300D, 0x00},
+	{0x300E, 0x00},
+	{0x3019, 0x00},
+	{0x3A41, 0x08},
+	{0x3342, 0x0A},
+	{0x3343, 0x00},
+	{0x3344, 0x16},
+	{0x3345, 0x00},
+	{0x3528, 0x0E},
+	{0x3554, 0x1F},
+	{0x3555, 0x01},
+	{0x3556, 0x01},
+	{0x3557, 0x01},
+	{0x3558, 0x01},
+	{0x3559, 0x00},
+	{0x355A, 0x00},
+	{0x35BA, 0x0E},
+	{0x366A, 0x1B},
+	{0x366B, 0x1A},
+	{0x366C, 0x19},
+	{0x366D, 0x17},
+	{0x33A6, 0x01},
+	{0x306B, 0x05},
+
+	{IMX274_TABLE_WAIT_MS, IMX274_WAIT_MS},
+	{IMX274_TABLE_END, 0x0000}
+};
+
+/* Mode 1 : 3840X2160 10 bits 60fps*/
+static const imx274_reg mode_3840X2160_60fps_2lane[] = {
+	{IMX274_TABLE_WAIT_MS, IMX274_WAIT_MS},
+	{0x3000, 0x12}, /* mode select streaming on */
+	/* input freq. 24M */
+	{0x3120, 0xF0},
+	{0x3122, 0x02},
+	{0x3129, 0x9c},
+	{0x312A, 0x02},
+	{0x312D, 0x02},
+
+	{0x310B, 0x00},
+	{0x304C, 0x00},
+	{0x304D, 0x03},
+	{0x331C, 0x1A},
+	{0x3502, 0x02},
+	{0x3529, 0x0E},
+	{0x352A, 0x0E},
+	{0x352B, 0x0E},
+	{0x3538, 0x0E},
+	{0x3539, 0x0E},
+	{0x3553, 0x00},
+	{0x357D, 0x05},
+	{0x357F, 0x05},
+	{0x3581, 0x04},
+	{0x3583, 0x76},
+	{0x3587, 0x01},
+	{0x35BB, 0x0E},
+	{0x35BC, 0x0E},
+	{0x35BD, 0x0E},
+	{0x35BE, 0x0E},
+	{0x35BF, 0x0E},
+	{0x366E, 0x00},
+	{0x366F, 0x00},
+	{0x3670, 0x00},
+	{0x3671, 0x00},
+	{0x30EE, 0x01},
+	{0x3304, 0x32},
+	{0x3306, 0x32},
+	{0x3590, 0x32},
+	{0x3686, 0x32},
+	/* resolution */
+	{0x30E2, 0x01},
+//	{0x30F6, 0x07},
+//	{0x30F7, 0x01},
+	{0x30F6, 0x0e}, // HMAX , 263
+	{0x30F7, 0x02}, // HMAX
 	{0x30F8, 0xC6},
 	{0x30F9, 0x11},
 	{0x3130, 0x78}, /*WRITE_VSIZE*/
@@ -665,6 +766,13 @@ static const imx274_reg mode_1288x546[] = {
 	{IMX274_TABLE_END, 0x0000}
 };
 
+static const imx274_reg imx274_2_lane_conf[] = {
+    {0x312E, 0x01},
+    {0x3AA2, 0x01},
+    {IMX274_TABLE_END, 0x00}
+};
+
+
 enum {
 	IMX274_MODE_3840X2160,
 	IMX274_MODE_1920X1080,
@@ -674,10 +782,11 @@ enum {
 	IMX274_MODE_START_STREAM,
 	IMX274_MODE_STOP_STREAM,
 	IMX274_MODE_TEST_PATTERN,
+    IMX274_MODE_2_LANE,
 };
 
 static const imx274_reg *mode_table[] = {
-	[IMX274_MODE_3840X2160] = mode_3840X2160_60fps,
+	[IMX274_MODE_3840X2160] = mode_3840X2160_60fps_2lane,
 	[IMX274_MODE_1920X1080] = mode_1920X1080,
 	[IMX274_MODE_3840X2160_DOL_30FPS] = mode_3840X2160_dol_30fps,
 	[IMX274_MODE_1920X1080_DOL_60FPS] = mode_1920X1080_dol_60fps,
@@ -685,6 +794,19 @@ static const imx274_reg *mode_table[] = {
 	[IMX274_MODE_START_STREAM]		= imx274_start,
 	[IMX274_MODE_STOP_STREAM]		= imx274_stop,
 	[IMX274_MODE_TEST_PATTERN]		= tp_colorbars,
+	[IMX274_MODE_2_LANE] = imx274_2_lane_conf,
+};
+
+static const imx274_reg *mode_table_4lane[] = {
+	[IMX274_MODE_3840X2160] = mode_3840X2160_60fps_4lane,
+	[IMX274_MODE_1920X1080] = mode_1920X1080,
+	[IMX274_MODE_3840X2160_DOL_30FPS] = mode_3840X2160_dol_30fps,
+	[IMX274_MODE_1920X1080_DOL_60FPS] = mode_1920X1080_dol_60fps,
+	[IMX274_MODE_1288X546] = mode_1288x546,
+	[IMX274_MODE_START_STREAM]		= imx274_start,
+	[IMX274_MODE_STOP_STREAM]		= imx274_stop,
+	[IMX274_MODE_TEST_PATTERN]		= tp_colorbars,
+    [IMX274_MODE_2_LANE] = imx274_2_lane_conf,
 };
 
 static const int imx274_30_fr[] = {

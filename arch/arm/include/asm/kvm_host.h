@@ -61,6 +61,9 @@ struct kvm_arch {
 	/* The last vcpu id that ran on each physical CPU */
 	int __percpu *last_vcpu_ran;
 
+	/* Timer */
+	struct arch_timer_kvm	timer;
+
 	/*
 	 * Anything that is not used directly from assembly code goes
 	 * here.
@@ -79,14 +82,6 @@ struct kvm_arch {
 
 	/* Mandated version of PSCI */
 	u32 psci_version;
-
-	/*
-	 * If we encounter a data abort without valid instruction syndrome
-	 * information, report this to user space.  User space can (and
-	 * should) opt in to this feature if KVM_CAP_ARM_NISV_TO_USER is
-	 * supported.
-	 */
-	bool return_nisv_io_abort_to_user;
 };
 
 #define KVM_NR_MEM_OBJS     40

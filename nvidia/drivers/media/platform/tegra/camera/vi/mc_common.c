@@ -185,6 +185,8 @@ static int vi_parse_dt(struct tegra_mc_vi *vi, struct platform_device *dev)
 		item->id = i;
 		list_add_tail(&item->list, &vi->vi_chans);
 	}
+	vi->framos_chan = of_property_read_bool(node,
+			"framos_channel");
 
 	return 0;
 }

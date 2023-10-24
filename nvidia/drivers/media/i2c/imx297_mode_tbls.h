@@ -1,0 +1,328 @@
+/*
+ * imx297_mode_tbls.h - imx297 sensor mode tables
+ *
+ * Copyright (c) 2019. FRAMOS.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms and conditions of the GNU General Public License,
+ * version 2, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef __IMX297_TABLES__
+#define __IMX297_TABLES__
+
+/**
+ * Image sensor registers as described in the IMX297 register map
+ */
+
+#define IMX_3A00      0x3A00
+#define IMX_3005      0x3005
+#define IMX_350B      0x350B
+#define IMX_300D      0x300D
+#define IMX_400E      0x400E
+#define VMAX_LOW      0x3010
+#define VMAX_MID      0x3011
+#define VMAX_HIGH     0x3012
+#define HMAX_LOW      0x3014
+#define IMX_4014      0x4014
+#define HMAX_HIGH     0x3015
+#define IMX_3516      0x3516
+#define IMX_321A      0x321A
+#define IMX_3226      0x3226
+#define IMX_3832      0x3832
+#define IMX_3833      0x3832
+#define IMX_3541      0x3541
+#define IMX_4041      0x4041
+#define IMX_3D48      0x3D48
+#define IMX_3D49      0x3D49
+#define IMX_3D4A      0x3D4A
+#define IMX_3D4B      0x3D4B
+#define IMX_3256      0x3256
+#define IMX_3758      0x3758
+#define IMX_3759      0x3759
+#define IMX_375A      0x375A
+#define IMX_375B      0x375B
+#define IMX_3165      0x3165
+#define IMX_3169      0x3169
+#define IMX_316A      0x316A
+#define IMX_4174      0x4174
+#define PULSE2        0x3079
+#define IMX_4182      0x4182
+#define IMX_4183      0x4183
+#define IMX_3090      0x3090
+#define IMX_3094      0x3094
+#define IMX_3098      0x3098
+#define IMX_309E      0x309E
+#define IMX_30A0      0x30A0
+#define IMX_30A1      0x30A1
+#define IMX_38A2      0x38A2
+#define IMX_40A2      0x40A2
+#define IMX_38A3      0x38A3
+#define IMX_30A4      0x30A4
+#define IMX_30A8      0x30A8
+#define IMX_30AC      0x30AC
+#define IMX_30AF      0x30AF
+#define IMX_40C1      0x40C1
+#define IMX_40C7      0x40C7
+#define IMX_31C8      0x31C8
+#define IMX_40C8      0x40C8
+#define IMX_31D0      0x31D0
+#define IMX_30DF      0x30DF
+
+#define PATERN_GEN        0x3238
+
+#define STANDBY       0x3000
+#define REGHOLD       0x3008
+#define XMSTA         0x300A
+#define SYNCSEL           0x3036
+#define TRIGEN            0x300B
+#define LOWLAGTRG         0x30AE
+#define VINT_EN           0x30AA
+
+#define GAIN_LOW      0x3204
+#define GAIN_HIGH     0x3205
+#define GAINDLY       0x3212
+#define BLKLEVEL_LOW  0x3254
+#define BLKLEVEL_HIGH 0x3255
+#define INCKSEL0      0x3089
+#define INCKSEL1      0x308A
+#define INCKSEL2      0x308B
+#define INCKSEL3      0x308C
+#define IMX_418C      0x418C
+
+#define SHS1_LOW      0x308D
+#define SHS1_MID      0x308E
+#define SHS1_HIGH     0x308F
+
+#define ROI_EN            0x3300
+#define ROI_PH_LSB        0x3310
+#define ROI_PH_MSB        0x3311
+#define ROI_PV_LSB        0x3312
+#define ROI_PV_MSB        0x3313
+#define ROI_WH_LSB        0x3314
+#define ROI_WH_MSB        0x3315
+#define ROI_WV_LSB        0x3316
+#define ROI_WV_MSB        0x3317
+
+
+#define IMX297_DEFAULT_WIDTH            728
+#define IMX297_DEFAULT_HEIGHT           544
+
+#define IMX297_CROP_640x480_WIDTH       640
+#define IMX297_CROP_640x480_HEIGHT      480
+
+#define IMX297_MIN_FRAME_LENGTH_DELTA 30
+
+/**
+ * Special values for the write table function
+ */
+#define IMX297_TABLE_WAIT_MS 0
+#define IMX297_TABLE_END     1
+#define IMX297_WAIT_MS       10
+
+typedef struct reg_8 imx297_reg;
+
+/**
+ * Tables for the write table function
+ */
+
+static const imx297_reg imx297_start[] = {
+
+    {STANDBY,          0x00},
+
+    {IMX297_TABLE_WAIT_MS, IMX297_WAIT_MS},
+
+    {XMSTA,            0x00},
+
+    {IMX297_TABLE_END,     0x00}
+};
+
+static const imx297_reg imx297_stop[] = {
+
+    {ROI_EN,           0x00},
+    {XMSTA,        0x01},
+    {IMX297_TABLE_WAIT_MS, IMX297_WAIT_MS},
+    {STANDBY,      0x01},
+
+    {IMX297_TABLE_END, 0x00}
+};
+
+static const imx297_reg imx297_init_settings[] = {
+
+    {IMX_3A00,         0x80},
+    {IMX_3005,         0xF0},
+    {IMX_350B,         0x7F},
+    {IMX_300D,         0x28},
+    {IMX_400E,         0x58},
+    {VMAX_LOW,         0x3E},
+    {VMAX_MID,         0x02},
+    {HMAX_LOW,         0x2E},
+    {IMX_4014,         0x1C},
+    {HMAX_HIGH,        0x04},
+    {IMX_3516,         0x77},
+    {IMX_321A,         0x00},
+    {IMX_3226,         0x02},
+    {IMX_3832,         0xF5},
+    {IMX_3833,         0x00},
+    {IMX_3541,         0x72},
+    {IMX_4041,         0x2A},
+    {IMX_3D48,         0xA3},
+    {IMX_3D49,         0x00},
+    {IMX_3D4A,         0x85},
+    {IMX_3D4B,         0x00},
+    {IMX_3256,         0x01},
+    {IMX_3758,         0xA3},
+    {IMX_3759,         0x00},
+    {IMX_375A,         0x85},
+    {IMX_375B,         0x00},
+    {IMX_3165,         0x00},
+    {IMX_3169,         0x10},
+    {IMX_316A,         0x02},
+    {IMX_4174,         0x00},
+    {PULSE2,           0x08},
+    {IMX_4182,         0x20},
+    {IMX_4183,         0x02},
+    {IMX_3090,         0x04},
+    {IMX_3094,         0x04},
+    {IMX_3098,         0x04},
+    {IMX_309E,         0x04},
+    {IMX_30A0,         0x04},
+    {IMX_30A1,         0x3C},
+    {IMX_38A2,         0xF6},
+    {IMX_40A2,         0x06},
+    {IMX_38A3,         0x00},
+    {IMX_30A4,         0x5F},
+    {IMX_30A8,         0x63},
+    {IMX_30AC,         0x28},
+    {IMX_30AF,         0x09},
+    {IMX_40C1,         0xF6},
+    {IMX_40C7,         0x0F},
+    {IMX_31C8,         0xF3},
+    {IMX_40C8,         0x00},
+    {IMX_31D0,         0xF4},
+    {IMX_30DF,         0x00},
+
+    {IMX297_TABLE_WAIT_MS, IMX297_WAIT_MS},
+    {IMX297_TABLE_END,     0x00}
+};
+
+static const imx297_reg mode_728x544[] = {
+
+    {GAIN_LOW,         0x00},
+    {GAIN_HIGH,        0x00},
+    {GAINDLY,          0x09},
+    {INCKSEL0,         0x80},
+    {INCKSEL1,         0x0B},
+    {INCKSEL2,         0x80},
+    {INCKSEL3,         0x08},
+    {IMX_418C,         0x74},
+    {SHS1_LOW,         0x0E},
+    {SHS1_MID,         0x00},
+    {SHS1_HIGH,        0x00},
+    {ROI_EN,               0x00},
+    {VMAX_LOW,         0x3E},
+    {VMAX_MID,         0x02},
+
+    {IMX297_TABLE_WAIT_MS, IMX297_WAIT_MS},
+    {IMX297_TABLE_END,     0x00}
+};
+
+static const imx297_reg mode_640x480[] = {
+
+    {GAIN_LOW,         0x00},
+    {GAIN_HIGH,        0x00},
+    {GAINDLY,          0x09},
+    {INCKSEL0,         0x80},
+    {INCKSEL1,         0x0B},
+    {INCKSEL2,         0x80},
+    {INCKSEL3,         0x08},
+    {IMX_418C,         0x74},
+    {SHS1_LOW,         0x0E},
+    {SHS1_MID,         0x00},
+    {SHS1_HIGH,        0x00},
+
+    {VMAX_LOW,         0xFB},
+    {VMAX_MID,         0x01},
+    {ROI_EN,               0x03},
+    {ROI_PH_LSB,           0x2C},
+    {ROI_PH_MSB,           0x00},
+    {ROI_PV_LSB,           0x20},
+    {ROI_PV_MSB,           0x00},
+    {ROI_WH_LSB,           0x80},
+    {ROI_WH_MSB,           0x02},
+    {ROI_WV_LSB,           0xE0},
+    {ROI_WV_MSB,           0x01},
+
+    {IMX297_TABLE_WAIT_MS, IMX297_WAIT_MS},
+    {IMX297_TABLE_END,     0x00}
+};
+
+/**
+ * Enum of available frame modes
+ */
+
+enum {
+    IMX297_MODE_728x544,
+    IMX297_MODE_640x480,
+
+    IMX297_INIT_SETTINGS,
+
+    IMX297_MODE_START_STREAM,
+    IMX297_MODE_STOP_STREAM,
+};
+
+/**
+ * Connecting frame modes to mode tables
+ */
+
+static const imx297_reg *mode_table[] = {
+    [IMX297_MODE_728x544]       = mode_728x544,
+    [IMX297_MODE_640x480]       = mode_640x480,
+
+    [IMX297_INIT_SETTINGS]      = imx297_init_settings,
+
+    [IMX297_MODE_START_STREAM]  = imx297_start,
+    [IMX297_MODE_STOP_STREAM]   = imx297_stop,
+};
+
+/**
+ * Framerates of available frame modes
+ */
+
+static const int imx297_120fps[] = {
+    120,
+};
+
+static const int imx297_136fps[] = {
+    136,
+};
+
+/**
+ * Connecting resolutions, framerates and mode tables
+ */
+static const struct camera_common_frmfmt imx297_frmfmt[] = {
+    {
+        .size = {IMX297_DEFAULT_WIDTH, IMX297_DEFAULT_HEIGHT},
+        .framerates = imx297_120fps,
+        .num_framerates = 1,
+        .hdr_en = false,
+        .mode = IMX297_MODE_728x544
+    },
+    {
+        .size = {IMX297_CROP_640x480_WIDTH, IMX297_CROP_640x480_HEIGHT},
+        .framerates = imx297_136fps,
+        .num_framerates = 1,
+        .hdr_en = false,
+        .mode = IMX297_MODE_640x480
+    },
+};
+
+#endif /* __IMX297_TABLES__ */

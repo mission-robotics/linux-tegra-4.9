@@ -1,7 +1,7 @@
 /*
  * max9295.c - max9295 GMSL Serializer driver
  *
- * Copyright (c) 2018-2020, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2018-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -97,6 +97,10 @@
 #define MAX9295_PWDN_GPIO 0x90
 
 #define MAX9295_MAX_PIPES 0x4
+#define MAX_CHANNEL_NUM 4
+
+/* count channel,the max MAX_CHANNEL_NUM*/
+static __u32 channel_count_leopard;
 
 struct max9295_client_ctx {
 	struct gmsl_link_ctx *g_ctx;
@@ -113,7 +117,7 @@ struct max9295 {
 	__u32 pst2_ref;
 };
 
-static struct max9295 *prim_priv__;
+static struct max9295 *prim_priv__[MAX_CHANNEL_NUM];
 
 struct map_ctx {
 	u8 dt;
@@ -264,6 +268,7 @@ int max9295_setup_streaming(struct device *dev)
 	max9295_write_reg(dev, MAX9295_START_PIPE_ADDR, st_pipe);
 	max9295_write_reg(dev, MAX9295_CSI_PORT_SEL_ADDR, port_sel);
 	max9295_write_reg(dev, MAX9295_PIPE_EN_ADDR, pipe_en);
+	max9295_write_reg(dev, 0x02D6, 0x84);
 
 	priv->g_client.st_done = true;
 
@@ -311,11 +316,11 @@ int max9295_setup_control(struct device *dev)
 
 	g_ctx = priv->g_client.g_ctx;
 
-	if (prim_priv__) {
+	//if (prim_priv__) {
 		/* update address reassingment */
-		max9295_write_reg(&prim_priv__->i2c_client->dev,
+        max9295_write_reg(&prim_priv__[g_ctx->reg_mux]->i2c_client->dev,
 				MAX9295_DEV_ADDR, (g_ctx->ser_reg << 1));
-	}
+	//}
 
 	if (g_ctx->serdes_csi_link == GMSL_SERDES_CSI_LINK_A)
 		err = max9295_write_reg(dev, MAX9295_CTRL0_ADDR, 0x21);
@@ -350,15 +355,15 @@ int max9295_setup_control(struct device *dev)
 		i2c_ovrd[i+1] += (i < 4) ? offset1 : offset2;
 
 		/* i2c passthrough2 must be configured once for all devices */
-		if ((i2c_ovrd[i] == 0x8B) && prim_priv__ && prim_priv__->pst2_ref)
+		if ((i2c_ovrd[i] == 0x8B) && prim_priv__[g_ctx->reg_mux]->pst2_ref)
 			continue;
 
 		max9295_write_reg(dev, i2c_ovrd[i], i2c_ovrd[i+1]);
 	}
 
 	/* dev addr pass-through2 ref */
-	if (prim_priv__)
-		prim_priv__->pst2_ref++;
+	//if (prim_priv__)
+	prim_priv__[g_ctx->reg_mux]->pst2_ref++;
 
 	max9295_write_reg(dev, MAX9295_I2C4_ADDR, (g_ctx->sdev_reg << 1));
 	max9295_write_reg(dev, MAX9295_I2C5_ADDR, (g_ctx->sdev_def << 1));
@@ -387,16 +392,17 @@ int max9295_reset_control(struct device *dev)
 		goto error;
 	}
 
+	prim_priv__[priv->g_client.g_ctx->reg_mux]->pst2_ref--;
 	priv->g_client.st_done = false;
 
-	if (prim_priv__) {
-		prim_priv__->pst2_ref--;
+	//if (prim_priv__) {
+	//	prim_priv__->pst2_ref--;
 
-		max9295_write_reg(dev, MAX9295_DEV_ADDR, (prim_priv__->def_addr << 1));
+	max9295_write_reg(dev, MAX9295_DEV_ADDR, (prim_priv__[priv->g_client.g_ctx->reg_mux]->def_addr << 1));
 
-		max9295_write_reg(&prim_priv__->i2c_client->dev,
+	max9295_write_reg(&prim_priv__[priv->g_client.g_ctx->reg_mux]->i2c_client->dev,
 					MAX9295_CTRL0_ADDR, MAX9295_RESET_ALL);
-	}
+	//}
 
 error:
 	mutex_unlock(&priv->lock);
@@ -495,7 +501,7 @@ static int max9295_probe(struct i2c_client *client,
 	mutex_init(&priv->lock);
 
 	if (of_get_property(node, "is-prim-ser", NULL)) {
-		if (prim_priv__) {
+		if (prim_priv__[channel_count_leopard] && channel_count_leopard >= MAX_CHANNEL_NUM) {
 			dev_err(&client->dev,
 				"prim-ser already exists\n");
 				return -EEXIST;
@@ -507,7 +513,8 @@ static int max9295_probe(struct i2c_client *client,
 			return -EINVAL;
 		}
 
-		prim_priv__ = priv;
+		prim_priv__[channel_count_leopard] = priv;
+		channel_count_leopard++;
 	}
 
 	dev_set_drvdata(&client->dev, priv);
@@ -521,7 +528,8 @@ static int max9295_probe(struct i2c_client *client,
 static int max9295_remove(struct i2c_client *client)
 {
 	struct max9295 *priv;
-
+	if (channel_count_leopard > 0)
+		channel_count_leopard--;
 	if (client != NULL) {
 		priv = dev_get_drvdata(&client->dev);
 		mutex_destroy(&priv->lock);
@@ -568,5 +576,5 @@ module_init(max9295_init);
 module_exit(max9295_exit);
 
 MODULE_DESCRIPTION("GMSL Serializer driver max9295");
-MODULE_AUTHOR("Sudhir Vyas <svyas@nvidia.com>");
+MODULE_AUTHOR("Leopard Imaging Inc.");
 MODULE_LICENSE("GPL v2");

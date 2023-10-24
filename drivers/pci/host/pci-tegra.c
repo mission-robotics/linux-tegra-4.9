@@ -2829,7 +2829,8 @@ static int tegra_pcie_init(struct tegra_pcie *pcie)
 	if (!pcie->num_ports) {
 		dev_info(pcie->dev, "PCIE: no end points detected\n");
 		err = -ENODEV;
-		goto fail_power_off;
+		return err; //do not turn off
+		//goto fail_power_off;
 	}
 	if (IS_ENABLED(CONFIG_PCI_MSI)) {
 		err = tegra_pcie_enable_msi(pcie, false);
@@ -4683,18 +4684,18 @@ static void pcie_delayed_detect(struct work_struct *work)
 	}
 #endif
 	ret = tegra_pcie_probe_complete(pcie);
-	if (ret || !pcie->num_ports) {
+	/*if (ret || !pcie->num_ports) {
 		pm_runtime_put_sync(pcie->dev);
 		goto release_regulators;
-	}
+	}*/
 	return;
 
-release_regulators:
+/*release_regulators:
 	devm_kfree(pcie->dev, pcie->pcie_regulators);
 	devm_kfree(pcie->dev, pcie->plat_data);
 	pci_free_host_bridge(pcie->host);
 	platform_set_drvdata(pdev, NULL);
-	return;
+	return;*/
 }
 
 #ifdef CONFIG_THERMAL
@@ -5184,6 +5185,7 @@ static void __exit tegra_pcie_exit_driver(void)
 	platform_driver_unregister(&tegra_pcie_driver);
 }
 
-module_init(tegra_pcie_init_driver);
+//module_init(tegra_pcie_init_driver);
+fs_initcall(tegra_pcie_init_driver);
 module_exit(tegra_pcie_exit_driver);
 MODULE_LICENSE("GPL v2");

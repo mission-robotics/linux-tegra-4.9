@@ -1,7 +1,7 @@
 /*
  * max9296.c - max9296 GMSL Deserializer driver
  *
- * Copyright (c) 2018-2020, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2018-2021, NVIDIA CORPORATION.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -122,6 +122,7 @@ struct max9296 {
 	u8 lane_mp1;
 	u8 lane_mp2;
 	int reset_gpio;
+	void (*set_reset_gpio)(unsigned gpio, int value);
 	int pw_ref;
 	struct regulator *vdd_cam_1v2;
 };
@@ -220,7 +221,7 @@ int max9296_power_on(struct device *dev)
 	if (priv->pw_ref == 0) {
 		usleep_range(1, 2);
 		if (priv->reset_gpio)
-			gpio_set_value(priv->reset_gpio, 0);
+			priv->set_reset_gpio(priv->reset_gpio, 0);
 
 		usleep_range(30, 50);
 
@@ -234,9 +235,9 @@ int max9296_power_on(struct device *dev)
 
 		/*exit reset mode: XCLR */
 		if (priv->reset_gpio) {
-			gpio_set_value(priv->reset_gpio, 0);
+			priv->set_reset_gpio(priv->reset_gpio, 0);
 			usleep_range(30, 50);
-			gpio_set_value(priv->reset_gpio, 1);
+			priv->set_reset_gpio(priv->reset_gpio, 1);
 			usleep_range(30, 50);
 		}
 
@@ -264,7 +265,7 @@ void max9296_power_off(struct device *dev)
 		/* enter reset mode: XCLR */
 		usleep_range(1, 2);
 		if (priv->reset_gpio)
-			gpio_set_value(priv->reset_gpio, 0);
+			priv->set_reset_gpio(priv->reset_gpio, 0);
 
 		if (priv->vdd_cam_1v2)
 			regulator_disable(priv->vdd_cam_1v2);
@@ -459,7 +460,7 @@ int max9296_sdev_register(struct device *dev, struct gmsl_link_ctx *g_ctx)
 		if (g_ctx->num_csi_lanes !=
 				priv->sources[i].g_ctx->num_csi_lanes) {
 			dev_err(dev,
-				"%s: csi num lanes mismatch\n", __func__);
+				"%s: csi num lanes mismatch %u != %u\n", __func__, g_ctx->num_csi_lanes, priv->sources[i].g_ctx->num_csi_lanes);
 			err = -EINVAL;
 			goto error;
 		}
@@ -771,6 +772,16 @@ int max9296_setup_streaming(struct device *dev, struct device *s_dev)
 
 		priv->lane_setup = true;
 	}
+//	max9296_write_reg(dev, 0x03EF, 0xC0);
+//	max9296_write_reg(dev, 0x03E2, 0x00);
+//	msleep(10);
+//	max9296_write_reg(dev, 0x03EA, 0x00);
+//	max9296_write_reg(dev, 0x03EB, 0x00);
+//	max9296_write_reg(dev, 0x03E5, 0x35);
+//	max9296_write_reg(dev, 0x03E6, 0xB7);
+//	max9296_write_reg(dev, 0x03E7, 0x0c);
+//	max9296_write_reg(dev, 0x03F1, 0x40);
+//	max9296_write_reg(dev, 0x03E0, 0x04);
 
 	priv->sources[i].st_enabled = true;
 
@@ -835,6 +846,10 @@ static int max9296_parse_dt(struct max9296 *priv,
 		dev_err(&client->dev, "reset-gpios not found %d\n", err);
 		return err;
 	}
+	if (gpio_cansleep(priv->reset_gpio))
+		priv->set_reset_gpio = &gpio_set_value_cansleep;
+	else
+		priv->set_reset_gpio = &gpio_set_value;
 
 	/* digital 1.2v */
 	if (of_get_property(node, "vdd_cam_1v2-supply", NULL)) {
@@ -948,5 +963,5 @@ module_init(max9296_init);
 module_exit(max9296_exit);
 
 MODULE_DESCRIPTION("Dual GMSL Deserializer driver max9296");
-MODULE_AUTHOR("Sudhir Vyas <svyas@nvidia.com");
+MODULE_AUTHOR("Leopard Imaging Inc.");
 MODULE_LICENSE("GPL v2");

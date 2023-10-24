@@ -661,6 +661,7 @@ static void tvnet_ep_process_ctrl_msg(struct pci_epf_tvnet *tvnet)
 {
 	struct ctrl_msg msg;
 
+	memset(&msg, 0, sizeof(msg));
 	while (tvnet_ivc_rd_available(&tvnet->h2ep_ctrl)) {
 		tvnet_ep_read_ctrl_msg(tvnet, &msg);
 		if (msg.msg_id == CTRL_MSG_LINK_UP)

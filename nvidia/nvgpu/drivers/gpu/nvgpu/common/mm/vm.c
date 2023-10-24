@@ -339,7 +339,7 @@ int __nvgpu_vm_init(struct mm_gk20a *mm,
 #endif
 
 	/* Initialize the page table data structures. */
-	strncpy(vm->name, name, sizeof(vm->name)-1);
+	strncpy(vm->name, name, sizeof(vm->name));
 	vm->name[sizeof(vm->name) - 1] = '\0';
 	err = nvgpu_gmmu_init_page_table(vm);
 	if (err) {

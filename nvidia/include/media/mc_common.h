@@ -328,6 +328,7 @@ struct tegra_mc_vi {
 	dma_addr_t emb_buf;
 	void *emb_buf_addr;
 	unsigned int emb_buf_size;
+	bool framos_chan;
 };
 
 int tegra_vi_get_port_info(struct tegra_channel *chan,

@@ -152,6 +152,12 @@ static void __vt_event_wait(struct vt_event_wait *vw)
 	wait_event_interruptible(vt_event_waitqueue, vw->done);
 }
 
+static long __vt_event_wait_timeout(struct vt_event_wait *vw, long timeout)
+{
+	return wait_event_interruptible_timeout(vt_event_waitqueue,
+		vw->done, timeout);
+}
+
 static void __vt_event_dequeue(struct vt_event_wait *vw)
 {
 	unsigned long flags;
@@ -216,6 +222,8 @@ static int vt_event_wait_ioctl(struct vt_event __user *event)
 
 int vt_waitactive(int n)
 {
+	long ret;
+
 	struct vt_event_wait vw;
 	do {
 		vw.event.event = VT_EVENT_SWITCH;
@@ -224,9 +232,18 @@ int vt_waitactive(int n)
 			__vt_event_dequeue(&vw);
 			break;
 		}
-		__vt_event_wait(&vw);
+
+		/*
+		 * 5 seconds is chosen as a result of observation from
+		 * stressing test exercising vt_waitactive for more than 7K
+		 * cycles, worst case for userspace to generate wake event
+		 * is no more than 4 seconds, usually in 2~3 secoonds range
+		 */
+		ret = __vt_event_wait_timeout(&vw, 5 * HZ);
 		__vt_event_dequeue(&vw);
-		if (vw.done == 0)
+		if (WARN_ON(ret == 0))
+			return -EIO;
+		else if (ret == -ERESTARTSYS)
 			return -EINTR;
 	} while (vw.event.newev != n);
 	return 0;
@@ -899,12 +916,22 @@ int vt_ioctl(struct tty_struct *tty,
 			console_lock();
 			vcp = vc_cons[i].d;
 			if (vcp) {
+				int ret;
+				int save_scan_lines = vcp->vc_scan_lines;
+				int save_cell_height = vcp->vc_cell_height;
+
 				if (v.v_vlin)
 					vcp->vc_scan_lines = v.v_vlin;
 				if (v.v_clin)
-					vcp->vc_font.height = v.v_clin;
+					vcp->vc_cell_height = v.v_clin;
 				vcp->vc_resize_user = 1;
-				vc_resize(vcp, v.v_cols, v.v_rows);
+				ret = vc_resize(vcp, v.v_cols, v.v_rows);
+				if (ret) {
+					vcp->vc_scan_lines = save_scan_lines;
+					vcp->vc_cell_height = save_cell_height;
+					console_unlock();
+					return ret;
+				}
 			}
 			console_unlock();
 		}

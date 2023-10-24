@@ -358,6 +358,23 @@ static int tegra_machine_dai_init(struct snd_soc_pcm_runtime *runtime,
 		}
 	}
 
+
+        rtd = snd_soc_get_pcm_runtime(card, "sgtl5000-codec");
+    if (rtd) {
+        dai_params =
+        (struct snd_soc_pcm_stream *)rtd->dai_link->params;
+                //printk(KERN_DEBUG "%s %d\n",__func__,__LINE__);
+                dai_params->formats = formats;  // CTI - Astro codec support
+                dai_params->rate_min = srate;
+
+        err = snd_soc_dai_set_sysclk(rtd->codec_dai, 0,
+                         aud_mclk, SND_SOC_CLOCK_IN);
+        if (err < 0) {
+            dev_err(card->dev, "codec_dai clock not set\n");
+            return err;
+        }
+    }
+
 	rtd = snd_soc_get_pcm_runtime(card, "rt565x-codec-sysclk-bclk1");
 	if (rtd) {
 		dai_params =
@@ -602,6 +619,8 @@ static int codec_init(struct tegra_machine *machine)
 			dai_links[i].init = tegra_machine_fepi_init;
 		else if (strstr(dai_links[i].name, "respeaker-4-mic-array"))
 			dai_links[i].init = tegra_machine_respeaker_init;
+		 else if (strstr(dai_links[i].name, "sgtl5000-codec"))
+	                dai_links[i].init = tegra_machine_rt565x_init;
 	}
 
 	return 0;

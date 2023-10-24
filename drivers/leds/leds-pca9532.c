@@ -468,6 +468,7 @@ pca9532_of_populate_pdata(struct device *dev, struct device_node *np)
 	if (!pdata)
 		return ERR_PTR(-ENOMEM);
 
+	of_property_read_s32(np, "gpio-base", &pdata->gpio_base);
 	for_each_child_of_node(np, child) {
 		if (of_property_read_string(child, "label",
 					    &pdata->leds[i].name))

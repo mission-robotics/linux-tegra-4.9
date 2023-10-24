@@ -72,22 +72,11 @@ struct kvm_arch {
 	/* Interrupt controller */
 	struct vgic_dist	vgic;
 
+	/* Timer */
+	struct arch_timer_kvm	timer;
+
 	/* Mandated version of PSCI */
 	u32 psci_version;
-
-	/*
-	 * If we encounter a data abort without valid instruction syndrome
-	 * information, report this to user space.  User space can (and
-	 * should) opt in to this feature if KVM_CAP_ARM_NISV_TO_USER is
-	 * supported.
-	 */
-	bool return_nisv_io_abort_to_user;
-
-	/*
-	 * If we encounter an access to an implementation-defined system
-	 * register, report this to user space.
-	 */
-	bool return_idsr_to_user;
 };
 
 #define KVM_NR_MEM_OBJS     40

@@ -53,6 +53,23 @@ struct kobject *sysfs_dev_block_kobj;
 
 static DEFINE_MUTEX(device_hotplug_lock);
 
+/**
+ * kobject_has_children - Returns whether a kobject has children.
+ * @kobj: the object to test
+ *
+ * This will return whether a kobject has other kobjects as children.
+ *
+ * It does NOT account for the presence of attribute files, only sub
+ * directories. It also assumes there is no concurrent addition or
+ * removal of such children, and thus relies on external locking.
+ 
+static inline bool kobject_has_children(struct kobject *kobj)
+{
+        WARN_ON_ONCE(atomic_read(&kobj->kref.refcount) == 0);
+
+        return kobj->sd && kobj->sd->dir.subdirs;
+}
+*/
 void lock_device_hotplug(void)
 {
 	mutex_lock(&device_hotplug_lock);

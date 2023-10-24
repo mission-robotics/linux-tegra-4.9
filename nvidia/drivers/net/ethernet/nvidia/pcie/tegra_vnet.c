@@ -606,6 +606,7 @@ static void tvnet_host_process_ctrl_msg(struct tvnet_priv *tvnet)
 {
 	struct ctrl_msg msg;
 
+	memset(&msg, 0, sizeof(msg));
 	while (tvnet_ivc_rd_available(&tvnet->ep2h_ctrl)) {
 		tvnet_host_read_ctrl_msg(tvnet, &msg);
 		if (msg.msg_id == CTRL_MSG_LINK_UP)

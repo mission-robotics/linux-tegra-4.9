@@ -514,6 +514,34 @@ config VIDEO_THS8200
 
 comment "Camera sensor devices"
 
+config VIDEO_ECAM
+	tristate "e-con camera sensor support"
+	depends on I2C && VIDEO_V4L2 && VIDEO_V4L2_SUBDEV_API
+	---help---
+	  This is a Video4Linux2 sensor-level driver for the e-con Systems
+	  camera.
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called based on sensor name.
+
+config VIDEO_ECAM_ISP
+       tristate "NVIDIA ISP based e-con camera support"
+	depends on I2C && VIDEO_V4L2 && VIDEO_V4L2_SUBDEV_API
+	---help---
+	This is a flag to enable changes required to support the
+	Video4Linux2 sensor-level driver for the e-con Systems camera
+	with NVIDIA ISP.
+
+config VIDEO_ECAM_ISP_MULTICAM
+       tristate "Multicam Features support for NVIDIA ISP based e-con Systems camera"
+	depends on I2C && VIDEO_V4L2 && VIDEO_V4L2_SUBDEV_API
+	---help---
+	This is a flag to enable changes required to support the Multicam features
+	such as Master/Slave Mode or Frame Sync Mode. Verify with e-con to confirm that
+	features are supported for specific sensors.
+
+
+
 config VIDEO_APTINA_PLL
 	tristate
 

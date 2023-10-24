@@ -75,6 +75,8 @@ struct pca954x {
 
 	u8 last_chan;		/* last register value */
 	u8 deselect;
+        u32 cti_broadcast_chan;
+        u8 cti_broadcast_reg;
 	struct i2c_client *client;
 	struct regulator *vcc_reg;
 	struct regulator *pullup_reg;
@@ -187,6 +189,14 @@ static int pca954x_select_chan(struct i2c_mux_core *muxc, u32 chan)
 	else
 		regval = 1 << chan;
 
+	if (chan == data->cti_broadcast_chan){
+		regval = data->cti_broadcast_reg;
+	}
+
+	if (chan == 7){
+		regval = 0x55;
+	}
+
 	/* Only select the channel if its different from the last channel */
 	if (data->last_chan != regval) {
 		ret = pca954x_reg_write(muxc->parent, client, regval);
@@ -227,6 +237,8 @@ static int pca954x_probe(struct i2c_client *client,
 	int ret;
 	bool fskip = false;
 	int force_bus = 0;
+	u32 broadchan;
+	u8 b_reg;
 
 	if (!i2c_check_functionality(adap, I2C_FUNC_SMBUS_BYTE))
 		return -ENODEV;
@@ -292,6 +304,22 @@ static int pca954x_probe(struct i2c_client *client,
 				__func__, force_bus);
 		}
 	}
+
+        if (of_property_read_u32(client->dev.of_node, "cti-broadcast-chan",
+                        &broadchan)) {
+                data->cti_broadcast_chan = PCA954X_MAX_NCHANS + 1; //if no broadcast channel selected, set to value outside of channel range
+        } else {
+                data->cti_broadcast_chan = broadchan;
+                dev_info(&client->dev, "Broadcast channel = %u\n", data->cti_broadcast_chan);
+                if (of_property_read_u8(client->dev.of_node, "cti-broadcast-address", &b_reg)) {
+                        dev_info(&client->dev, "%s: Warning could not read broadcast address for broadcast channel\n",
+                        __func__);
+                } else {
+                        data->cti_broadcast_reg = b_reg;
+                        dev_info(&client->dev, "Broadcast reg = 0x%x\n", data->cti_broadcast_reg);
+                }
+        }
+
 
 	fskip = of_property_read_bool(client->dev.of_node,
 			"skip_mux_detect");
