@@ -10,7 +10,7 @@
 # are not supported by all versions of the compiler
 # ==========================================================================
 
-KBUILD_CFLAGS += $(call cc-disable-warning, packed-not-aligned)
+KBUILD_CFLAGS += $(call cc-disable-warning, packed-not-aligned) $(call cc-disable-warning, misleading-indentation) 
 
 ifeq ("$(origin W)", "command line")
   export KBUILD_ENABLE_EXTRA_GCC_CHECKS := $(W)
