@@ -1631,7 +1631,7 @@ static int set_can_clk_src_and_rate(struct mttcan_priv *priv)
 	return 0;
 }
 
-static int mttcan_probe(struct platform_device *pdev)
+static int __init mttcan_probe(struct platform_device *pdev)
 {
 	int ret = 0;
 	int irq = 0;
@@ -1902,7 +1902,7 @@ static int mttcan_resume(struct platform_device *pdev)
 }
 #endif
 
-static struct platform_driver mttcan_plat_driver = {
+static struct platform_driver __refdata mttcan_plat_driver = {
 	.driver = {
 		   .name = KBUILD_MODNAME,
 		   .owner = THIS_MODULE,
